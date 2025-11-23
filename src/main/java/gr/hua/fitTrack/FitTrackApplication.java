@@ -8,7 +8,8 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 public class FitTrackApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(FitTrackApplication.class, args);
+
+        SpringApplication.run(FitTrackApplication.class, args);
 	}
 
 }

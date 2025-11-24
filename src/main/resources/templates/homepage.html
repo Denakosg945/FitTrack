@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fit Track</title>
+    <!--TAB ICON-->
+    <link rel="icon" type="image/ico" href="/images/favicon.ico">
+    <!--BOOTSTRAP-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+    <!--CUSTOM STYLES-->
+    <style>
+
+        /*For the Background image and lowering its brightness*/
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            background:
+                    linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
+                    url("/images/homepage_background.jpg");
+            background-size: cover;       /* full screen */
+            position: relative;
+        }
+
+        /* Custom Header style for home amd */
+        header {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 140px;
+        }
+
+        /*Logo size*/
+        .header-left img {
+            max-width: 130px;
+            height: auto;
+        }
+
+        /*Where the logo is positioned*/
+        .header-left{
+            position: absolute;
+            left: 20px;
+            top: 10px;
+        }
+
+        /*Button Positioning*/
+        .header-right {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        /*Button Style*/
+        .header-right a {
+            display: inline-block;
+            background-color: #634444;
+            color: #ffffff;
+            padding: 10px 22px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 1.3rem;
+            font-family: "Ultimate";
+        }
+
+        /*Hero is used for the big title*/
+        /*Positioning*/
+        .hero {
+            text-align: center;
+            margin-top: 20vh;
+            color: #ffffff;
+        }
+
+        /*Title Style*/
+        .hero-title {
+            font-size: 7rem;
+            font-weight: 900;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            font-family: "Ultimate", sans-serif;
+        }
+
+        /*Subtitle Style*/
+        .hero-subtitle {
+            font-size: 2rem;
+            font-weight: 300;
+            margin-top: 10px;
+        }
+
+        /*Buttons positioning*/
+        .hero-buttons {
+            margin-top: 40px;
+        }
+
+        /*Trainers button Style*/
+        .hero-btn {
+            padding: 15px 30px;
+            background-color: #634444;
+            color: #000;
+            text-decoration: none;
+            font-size: 1.3rem;
+            border-radius: 6px;
+            margin-right: 15px;
+        }
+
+        /*Register Button Style*/
+        .hero-btn-outline {
+            padding: 15px 30px;
+            border: 2px solid #634444;
+            color: #f1f1f1;
+            text-decoration: none;
+            font-size: 1.3rem;
+            border-radius: 6px;
+        }
+        /*Footer Style*/
+        footer {
+            position: fixed;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            color: #939393;
+
+        }
+    </style>
+</head>
+<body>
+    <!--HEADER-->
+    <header class="header" >
+        <!--LOGO-->
+        <div class="header-left" >
+            <img src="/images/logo.png" class="logo" alt="FitTrack Logo">
+        </div>
+        <!--LOGIN BUTTON-->
+        <div class="header-right">
+            <a href="/login" class="header-text">Login</a>
+        </div>
+    </header>
+
+    <!--SUBTITLE-->
+    <section >
+        <h1 class="text-center" style="color: #bfbfbf">Let's get started! </h1>
+    </section>
+
+    <!--TITLE-->
+    <section class="hero">
+        <h1 class="hero-title">FIT TRACK</h1>
+        <h2 class="hero-subtitle">Your Fitness Companion</h2>
+
+        <!--BUTTONS-->
+        <div class="hero-buttons">
+            <a href="/trainers" class="hero-btn">Our Trainers</a>
+            <a href="/register" class="hero-btn-outline">Register</a>
+        </div>
+    </section>
+    <footer>
+        © 2025 Harokopio University of Athens
+    </footer>
+</body>
+</html>

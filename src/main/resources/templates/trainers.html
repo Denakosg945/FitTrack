@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fit Track | Trainers</title>
+    <!--TAB ICON-->
+    <link rel="icon" type="image/ico" href="/images/favicon.ico">
+    <!--BOOTSTRAP-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+    <!--CUSTOM STYLES-->
+    <style>
+        /*HEADER STYLE*/
+        header {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 140px;
+        }
+        /*IMAGE SIZING*/
+        .header-left img {
+            max-width: 130px;
+            height: auto;
+        }
+        /*IMAGE POSITIONING*/
+        .header-left{
+            position: absolute;
+            left: 20px;
+            top: 10px;
+        }
+        /*TITLE STYLE*/
+        .header-center{
+            text-align: center;
+            font-size: xxx-large;
+            font-family: "Ultimate", sans-serif;
+        }
+        /*SUBTITLE STYLE*/
+        .subtitle{
+            font-family: sans-serif;
+            font-size: xx-large;
+        }
+        /*REGISTER REDIRECT POSITIONING*/
+        .header-right {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        /*REGISTER REDIRECT SIZING*/
+        .header-right a {
+            display: inline-block;
+            background-color: #634444;
+            color: #ffffff;
+            padding: 10px 22px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 1.3rem;
+            font-family: "Ultimate",serif;
+        }
+        /*FORM CONTAINER*/
+        .form-container {
+            margin: 0 auto;
+            max-width: fit-content;
+            box-shadow: 12px 12px 0px #533434;
+            border: 4px solid #b6b6b6 !important;
+
+        }
+        /*SEARCH BUTTON*/
+        .src-btn{
+            background-color: #533434;
+            color: white;
+            outline-color: black;
+            border-radius: 10px;
+            width: 130px;
+            height: 40px;
+            ;
+        }
+        /*TABLE STYLE*/
+        table {
+            width: 95%;
+            margin-left: auto;
+            margin-right:auto;
+            border: 1px solid black;
+
+        }
+        /*TABLE HEADERS STYLE*/
+        th {
+            background-color: #ae9494;
+            border: 1px solid black;
+
+        }
+        /*TABLE ROW STYLE*/
+        td {
+            border: 1px solid black;
+        }
+        /*FOOTER STYLE*/
+        footer {
+            position: fixed;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<!--HEADER-->
+<header class="header">
+    <!--LOGO / HOMEPAGE REDIRECT-->
+    <div class="header-left">
+        <a href="/" class="header-left-img">
+            <img src="/images/logo.png" class="logo" alt="FitTrack Logo">
+        </a>
+    </div>
+    <!--TITLE-->
+    <div>
+        <h1 class="header-center">Fit Track
+            <!--SUBTITLE-->
+            <small  class="subtitle" >/ Trainers</small>
+        </h1>
+    </div>
+    <!--REGISTER BUTTON-->
+    <div class="header-right">
+        <a href="/register" class="header-text">Register Now</a>
+    </div>
+</header>
+<section >
+    <!--BODY TITLE-->
+    <h1 class="text-center">These are our trainers:</h1>
+    <br>
+    <!--SEARCH FORM CONTAINER-->
+    <div class="form-container" >
+        <form onsubmit="event.preventDefault(); window.location='/trainers';" class="container">
+            <!--FORM ELEMENT HORIZONTAL ALLIGNMENT -->
+            <div class="row g-3 align-items-end">
+
+                    <!--LASTNAME-->
+                    <div class="col-md-3">
+                        <label class="form-label">Last Name: </label>
+                        <select name ="lname" class="form-control">
+                            <option value="">--Please choose a Last Name--</option>
+                            <option value="Vlaxos">Vlaxos</option>
+                            <option value="Theoxaris">Theoxaris</option>
+                            <option value="Papadimitriou">Papadimitriou</option>
+                            <option value="Lizos">Lizos</option>
+                        </select>
+                    </div>
+
+                    <!--LOCATION-->
+                    <div class="col-md-3">
+                        <label class="form-label">Location </label>
+                        <select name ="location" class="form-control" >
+                            <option value="">--Please choose a Location--</option>
+                            <option value="Nea Philadelphia">Nea Philadelphia</option>
+                            <option value="Artemis">Artemis</option>
+                            <option value="Petroupoli">Petroupoli</option>
+                            <option value="Vironas">Vironas</option>
+                        </select>
+                    </div>
+
+                    <!--SPECIALIZATION-->
+                    <div class="col-md-3">
+                        <label class="form-label">Specialization: </label>
+                        <select name ="specialization" class="form-control" >
+                            <option value="">--Please choose a Specialization--</option>
+                            <option value="Body Building">Body Building</option>
+                            <option value="Fat Loss">Fat Loss</option>
+                            <option value="Aerobic">Aerobic</option>
+                            <option value="Strengh Training">Strength Training</option>
+                        </select>
+                    </div>
+                    <!--SEARCH BUTTON-->
+                    <div class="col-md-3 d-flex justify-content-end align-items-end" style="color: #533434">
+                        <button type="submit" class="src-btn" style="background-color: #533434" >Search</button>
+                    </div>
+            </div>
+        </form>
+        </div>
+    <br>
+    <br>
+    <!--TABLE OF TRAINERS IN DB WHO APPEAR FROM THE SEARCH FORM-->
+    <table>
+        <!--TABLE COLUMNS-->
+        <tr>
+            <th>Last Name</th>
+            <th>First Name</th>
+            <th>Location</th>
+            <th>Specialization</th>
+            <th>Phone Number</th>
+        </tr>
+        <!--THIS TABLE DATA IS ONLY TEMPORARY, WE WILL GET REAL DATA FROM DB-->
+        <!-- TEMPORARY TABLE ROW 1-->
+        <tr>
+            <td>Blaxos</td>
+            <td>Giorgos</td>
+            <td>Nea Philadelphia</td>
+            <td>Body Building</td>
+            <td>6984077042</td>
+        </tr>
+        <!--TEMPORARY TABLE ROW 2-->
+        <tr>
+            <td>Theoxaris</td>
+            <td>Konstantinos</td>
+            <td>Artemis</td>
+            <td>Fat loss</td>
+            <td>6974576453</td>
+        </tr>
+        <!--TEMPORARY TABLE ROW 3-->
+        <tr>
+            <td>Papadimitriou</td>
+            <td>Dimitrios</td>
+            <td>Petroupoli</td>
+            <td>Aerobic</td>
+            <td>6981878345</td>
+        </tr>
+        <!--TEMPORARY TABLE ROW 4-->
+        <tr>
+            <td>Christos</td>
+            <td>Lizos</td>
+            <td>Vironas</td>
+            <td>Strengh training</td>
+            <td>6973374632</td>
+        </tr>
+    </table>
+</section>
+<!--FOOTER COPYRIGHT-->
+<footer>
+    © 2025 Harokopio University of Athens
+</footer>
+
+</body>
+</html>

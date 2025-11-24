@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fit Track</title>
+
+    <style>
+        header {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 140px;
+        }
+        .header-left img {
+            width: 130px;
+            height: auto;
+        }
+        .header-left{
+            position: absolute;
+            left: 20px;
+            top: 10px;
+        }
+        .header-center{
+            text-align: center;
+            font-size: xxx-large;
+            font-family: "Ultimate", sans-serif;
+        }
+        .header-right {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        .header-right a {
+            display: inline-block;
+            background-color: #634444;
+            color: #ffffff;
+            padding: 10px 22px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 1.3rem;
+            font-family: "Ultimate";
+        }
+        h1 {
+            margin: 0;
+            padding: 0;
+        }
+        @font-face {
+            font-family: "Ultimate";
+            src: url("/fonts/Ultimate.otf") format("opentype");
+        }
+        footer {
+            position: fixed;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div class="header-left">
+        <a href="/"><img src="/static/images/logo.png" alt=""></a>
+    </div>
+    <div class="header-center">
+        <h1>FitTrack</h1>
+    </div>
+    <div class="header-right">
+        <a href="/login">Login</a>
+    </div>
+
+</header>
+
+
+
+<footer>
+    © 2025 Harokopio University of Athens
+</footer>
+
+</body>
+</html>

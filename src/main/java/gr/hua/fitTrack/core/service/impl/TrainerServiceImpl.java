@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Transactional
 @Service
 public class TrainerServiceImpl implements TrainerService {
 
@@ -42,7 +43,9 @@ public class TrainerServiceImpl implements TrainerService {
     public CreateTrainerResult createTrainerProfile(final CreateTrainerRequest createTrainerRequest, final boolean notify){
         if (createTrainerRequest == null) throw new NullPointerException("createTrainerRequest cannot be null");
 
-        final Person person = personRepository.getReferenceById(createTrainerRequest.personId());
+        final Person person = personRepository.findById(createTrainerRequest.personId())
+                .orElseThrow(() -> new IllegalArgumentException("Person not found"));
+
         final String location = createTrainerRequest.location();
         final String specialization  = createTrainerRequest.specialization();
         final String clientNotes = createTrainerRequest.Client_Notes();
@@ -77,6 +80,72 @@ public class TrainerServiceImpl implements TrainerService {
         return CreateTrainerResult.success(trainerView);
         }
 
+    @Override
+    public int countTrainerProfiles() {
+        return (int) trainerProfileRepository.count();
+
+    }
+
+    @Override
+    public boolean existsByTrainerPersonId(Long personId) {
+        return trainerProfileRepository.existsByPersonId(personId);
+    }
+
+    @Override
+    public List<TrainerView> getAllTrainers() {
+        return trainerProfileRepository.findAll()
+                .stream()
+                .map(trainerMapper::convertTrainerToTrainerView)
+                .toList();
+    }
+
+
+    @Override
+    public List<String> getAllUniqueLastNames() {
+        return trainerProfileRepository.findAll()
+                .stream()
+                .map(tp ->tp.getPerson()
+                .getLastName())
+                .distinct().
+                sorted().
+                toList();
+    };
+
+    @Override
+    public List<String> getAllUniqueLocations(){
+        return trainerProfileRepository.findAll()
+                .stream()
+                .map(TrainerProfile::getLocation)
+                .distinct()
+                .sorted()
+                .toList();
+    };
+
+    @Override
+    public List<String> getAllUniqueSpecializations(){
+        return trainerProfileRepository.findAll()
+                .stream()
+                .map(TrainerProfile::getSpecialization)
+                .distinct()
+                .sorted()
+                .toList();
+    };
+
+    @Override
+    public List<TrainerView> search(String name, String location, String specialization){
+
+        List<TrainerProfile> trainers = trainerProfileRepository.findAll();
+
+        return trainers.stream()
+                .filter(tp -> name == null || name.isBlank() ||
+                        tp.getPerson().getLastName().equalsIgnoreCase(name))
+                .filter(tp-> location ==null || location.isBlank() ||
+                        tp.getLocation().equalsIgnoreCase(location))
+                .filter(tp->specialization ==null || specialization.isBlank() ||
+                        tp.getSpecialization().equalsIgnoreCase(specialization))
+                .map(trainerMapper::convertTrainerToTrainerView)
+                .toList();
+    }
 
     //TODO IMPLEMENT
     @Override

@@ -131,7 +131,7 @@
     <br>
     <!--SEARCH FORM CONTAINER-->
     <div class="form-container" >
-        <form onsubmit="event.preventDefault(); window.location='/trainers';" class="container">
+        <form method="GET" action="/trainers" class="container">
             <!--FORM ELEMENT HORIZONTAL ALLIGNMENT -->
             <div class="row g-3 align-items-end">
 
@@ -140,10 +140,11 @@
                         <label class="form-label">Last Name: </label>
                         <select name ="lname" class="form-control">
                             <option value="">--Please choose a Last Name--</option>
-                            <option value="Vlaxos">Vlaxos</option>
-                            <option value="Theoxaris">Theoxaris</option>
-                            <option value="Papadimitriou">Papadimitriou</option>
-                            <option value="Lizos">Lizos</option>
+                            <!--UNIQUE VALUES FROM FIELD LASTNAMES OF TABLE TRAINERS-->
+                            <option th:each="ln : ${lastNames}"
+                                    th:value="${ln}"
+                                    th:text="${ln}">
+                            </option>
                         </select>
                     </div>
 
@@ -152,10 +153,11 @@
                         <label class="form-label">Location </label>
                         <select name ="location" class="form-control" >
                             <option value="">--Please choose a Location--</option>
-                            <option value="Nea Philadelphia">Nea Philadelphia</option>
-                            <option value="Artemis">Artemis</option>
-                            <option value="Petroupoli">Petroupoli</option>
-                            <option value="Vironas">Vironas</option>
+                            <!--UNIQUE VALUES FROM FIELD LOCATION OF TABLE TRAINERS-->
+                            <option th:each="lc : ${locations}"
+                                    th:value="${lc}"
+                                    th:text="${lc}">
+                            </option>
                         </select>
                     </div>
 
@@ -164,10 +166,11 @@
                         <label class="form-label">Specialization: </label>
                         <select name ="specialization" class="form-control" >
                             <option value="">--Please choose a Specialization--</option>
-                            <option value="Body Building">Body Building</option>
-                            <option value="Fat Loss">Fat Loss</option>
-                            <option value="Aerobic">Aerobic</option>
-                            <option value="Strengh Training">Strength Training</option>
+                            <!--UNIQUE VALUES FROM FIELD SPECIALIZATION OF TABLE TRAINERS-->
+                            <option th:each="sp : ${specializations}"
+                                    th:value="${sp}"
+                                    th:text="${sp}">
+                            </option>
                         </select>
                     </div>
                     <!--SEARCH BUTTON-->
@@ -182,46 +185,22 @@
     <!--TABLE OF TRAINERS IN DB WHO APPEAR FROM THE SEARCH FORM-->
     <table>
         <!--TABLE COLUMNS-->
-        <tr>
-            <th>Last Name</th>
-            <th>First Name</th>
-            <th>Location</th>
-            <th>Specialization</th>
-            <th>Phone Number</th>
-        </tr>
-        <!--THIS TABLE DATA IS ONLY TEMPORARY, WE WILL GET REAL DATA FROM DB-->
-        <!-- TEMPORARY TABLE ROW 1-->
-        <tr>
-            <td>Blaxos</td>
-            <td>Giorgos</td>
-            <td>Nea Philadelphia</td>
-            <td>Body Building</td>
-            <td>6984077042</td>
-        </tr>
-        <!--TEMPORARY TABLE ROW 2-->
-        <tr>
-            <td>Theoxaris</td>
-            <td>Konstantinos</td>
-            <td>Artemis</td>
-            <td>Fat loss</td>
-            <td>6974576453</td>
-        </tr>
-        <!--TEMPORARY TABLE ROW 3-->
-        <tr>
-            <td>Papadimitriou</td>
-            <td>Dimitrios</td>
-            <td>Petroupoli</td>
-            <td>Aerobic</td>
-            <td>6981878345</td>
-        </tr>
-        <!--TEMPORARY TABLE ROW 4-->
-        <tr>
-            <td>Christos</td>
-            <td>Lizos</td>
-            <td>Vironas</td>
-            <td>Strengh training</td>
-            <td>6973374632</td>
-        </tr>
+        <thead>
+            <tr>
+                <th>Last Name</th>
+                <th>First Name</th>
+                <th>Location</th>
+                <th>Specialization</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="t : ${trainers}">
+                <td th:text="${t.lastName}"></td>
+                <td th:text="${t.firstName}"></td>
+                <td th:text="${t.location}"></td>
+                <td th:text="${t.specialization}"></td>
+            </tr>
+        </tbody>
     </table>
 </section>
 <!--FOOTER COPYRIGHT-->

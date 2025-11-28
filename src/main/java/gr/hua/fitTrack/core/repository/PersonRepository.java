@@ -8,4 +8,7 @@ import org.springframework.stereotype.Repository;
 public interface PersonRepository extends JpaRepository<Person,Long> {
 
     // Jpa provides CRUD functions automatically
+    boolean existsByEmailAddress(String emailAddress);
+
+    Person findByEmailAddress(String emailAddress);
 }

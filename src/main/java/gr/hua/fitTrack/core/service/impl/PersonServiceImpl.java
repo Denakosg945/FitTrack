@@ -84,6 +84,15 @@ public class PersonServiceImpl implements PersonService {
         if (!personRepository.existsById(personId)) return;
         personRepository.deleteById(personId);
     }
+    @Override
+    public boolean existsByEmail(String email) {
+        return personRepository.existsByEmailAddress(email);
+    }
+
+    @Override
+    public Person getByEmail(String email) {
+        return personRepository.findByEmailAddress(email);
+    }
 
 
 

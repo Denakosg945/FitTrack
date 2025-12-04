@@ -15,6 +15,6 @@ public interface ProgressRepository extends JpaRepository<Progress, Integer> {
 
     public List<Progress> findByClientOrderByEntryDateDesc(ClientProfile client);
 
-    void deleteByClientAndId(Person person, Long id);
+    void deleteByClientAndId(ClientProfile person, Long id);
 
 }

@@ -18,7 +18,7 @@ public class Appointment {
     //TODO CHANGE TO CLIENTPROFILE
     @ManyToOne
     @JoinColumn(name = "fk_client",nullable = false)
-    private Person client;
+    private ClientProfile client;
 
     @ManyToOne
     @JoinColumn(name = "fk_trainer", nullable = false)
@@ -42,7 +42,7 @@ public class Appointment {
 
     }
 
-    public Appointment(Person client, TrainerProfile trainer,TrainerScheduleSlot trainerScheduleSlot, String status, boolean isOutdoor,String notes) {
+    public Appointment(ClientProfile client, TrainerProfile trainer,TrainerScheduleSlot trainerScheduleSlot, String status, boolean isOutdoor,String notes) {
         this.notes = notes;
         this.trainerScheduleSlot = trainerScheduleSlot;
         this.client = client;
@@ -59,11 +59,11 @@ public class Appointment {
         this.id = id;
     }
 
-    public Person getClient() {
+    public ClientProfile getClient() {
         return client;
     }
 
-    public void setClient(Person client) {
+    public void setClient(ClientProfile client) {
         this.client = client;
     }
 

@@ -1,5 +1,6 @@
 package gr.hua.fitTrack.core.repository;
 
+import gr.hua.fitTrack.core.model.ClientProfile;
 import gr.hua.fitTrack.core.model.Goals;
 import gr.hua.fitTrack.core.model.Person;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,6 +11,6 @@ public interface GoalsRepository extends JpaRepository<Goals, Long> {
 
     // Jpa provides CRUD functions automatically
 
-    public Goals findByClient(Person client);
+    public Goals findByClient(ClientProfile client);
 
 }

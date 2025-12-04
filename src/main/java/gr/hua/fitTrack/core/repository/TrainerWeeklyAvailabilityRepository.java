@@ -12,11 +12,11 @@ public interface TrainerWeeklyAvailabilityRepository
         extends JpaRepository<TrainerWeeklyAvailability, Integer> {
 
     // Find all weekly availability for a given TrainerProfile entity
-    List<TrainerWeeklyAvailability> findByTrainerProfile_Id(int trainerProfileId);
+    List<TrainerWeeklyAvailability> findByTrainerProfile_Id(Long trainerProfileId);
 
     // Find weekly availability for a trainer by weekday
     List<TrainerWeeklyAvailability> findByTrainerProfile_IdAndWeekday(
-            int trainerProfileId,
+            Long trainerProfileId,
             Weekday weekday
     );
 }

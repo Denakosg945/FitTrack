@@ -1,0 +1,2 @@
+package gr.hua.fitTrack.config;public class StartupRunner {
+}

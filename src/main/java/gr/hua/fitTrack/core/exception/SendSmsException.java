@@ -1,7 +1,11 @@
 package gr.hua.fitTrack.core.exception;
 
-public class SmsException extends Exception{
-    public sendSmsException(String content){
+public class SendSmsException extends RuntimeException{
+    public SendSmsException(String content){
         super(content);
+    }
+
+    public SendSmsException(String content, Throwable cause){
+        super(content, cause);
     }
 }

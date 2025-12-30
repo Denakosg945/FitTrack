@@ -3,6 +3,7 @@ package gr.hua.fitTrack.core.service;
 import gr.hua.fitTrack.core.model.Person;
 import gr.hua.fitTrack.core.service.model.CreatePersonRequest;
 import gr.hua.fitTrack.core.service.model.CreatePersonResult;
+import gr.hua.fitTrack.core.service.model.PendingRegistration;
 import gr.hua.fitTrack.core.service.model.PersonView;
 
 public interface PersonService {
@@ -18,4 +19,11 @@ public interface PersonService {
     boolean existsByEmail(String email);
 
     void deleteById(Long personId);
+
+    PendingRegistration getPendingRegistration(String phone);
+
+    void generate2FACode(CreatePersonRequest createPersonRequest);
+
+    CreatePersonResult verify2FACode(String phone,String code);
+
 }

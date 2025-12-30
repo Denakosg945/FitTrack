@@ -3,6 +3,7 @@ package gr.hua.fitTrack.core.service.impl;
 import gr.hua.fitTrack.core.model.ClientProfile;
 import gr.hua.fitTrack.core.model.Goals;
 import gr.hua.fitTrack.core.model.Person;
+import gr.hua.fitTrack.core.port.SmsNotificationPort;
 import gr.hua.fitTrack.core.repository.ClientProfileRepository;
 import gr.hua.fitTrack.core.repository.PersonRepository;
 import gr.hua.fitTrack.core.service.ClientService;
@@ -21,15 +22,19 @@ public class ClientServiceImpl implements ClientService {
     public final ClientProfileRepository clientProfileRepository;
     public final PersonRepository personRepository;
     public final ClientMapper clientMapper;
+    private final SmsNotificationPort smsNotificationPort;
+
 
     public ClientServiceImpl(ClientProfileRepository clientProfileRepository,
-                             PersonRepository personRepository, ClientMapper clientMapper) {
+                             PersonRepository personRepository, ClientMapper clientMapper, SmsNotificationPort smsNotificationPort) {
         if(clientProfileRepository ==null) throw new NullPointerException("clientProfileRepository is null");
         if(personRepository ==null) throw new NullPointerException("personRepository is null");
         if(clientMapper ==null) throw new NullPointerException("clientMapper is null");
+        if(smsNotificationPort ==null) throw new NullPointerException("smsNotificationPort is null");
         this.clientProfileRepository = clientProfileRepository;
         this.personRepository = personRepository;
         this.clientMapper = new ClientMapper();
+        this.smsNotificationPort = smsNotificationPort;
 
     }
     @Override
@@ -63,9 +68,10 @@ public class ClientServiceImpl implements ClientService {
 
         clientProfile = clientProfileRepository.save(clientProfile);
 
-        if(notify){
-            final String content = String.format("Client profile created with id: %s", clientProfile.getId());
-        }
+
+        final String content = String.format("You have succesfully registered for the Fit Track Application as a client.");
+        smsNotificationPort.sendSms(person.getPhoneNumber(),content);
+
         final ClientView clientView = this.clientMapper.converClientToClientView(clientProfile);
 
         return CreateClientResult.success(clientView);

@@ -4,11 +4,16 @@ import gr.hua.fitTrack.core.model.PersonType;
 import gr.hua.fitTrack.core.service.PersonService;
 import gr.hua.fitTrack.core.service.model.CreatePersonRequest;
 import gr.hua.fitTrack.core.service.model.CreatePersonResult;
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 /**
  * UI controller for managing client/trainer registration.
@@ -22,6 +27,7 @@ public class RegistrationController {
     private final PersonService personService;
 
     public RegistrationController(final PersonService personService) {
+
         if (personService == null) throw new NullPointerException("personService is null");
         this.personService = personService;
     }
@@ -44,16 +50,18 @@ public class RegistrationController {
      */
     @PostMapping("/register")
     public String handleRegistrationFormSubmission(
-        @ModelAttribute("createPersonRequest") final CreatePersonRequest createPersonRequest,
-                final Model model
+            @ModelAttribute("createPersonRequest") final CreatePersonRequest createPersonRequest,
+            final Model model
         ){
+
         //TODO: Validation, UI errors
         final CreatePersonResult createPersonResult = personService.createPerson(createPersonRequest);
+
+
         if (createPersonResult.created()){
-            if(createPersonResult.personView().type().equals(PersonType.CLIENT)){
-                return "redirect:/clientProfileCreation?personId=" + createPersonResult.personView().id();
-            }
-            return "redirect:/trainerProfileCreation?personId=" + createPersonResult.personView().id();
+            personService.generate2FACode(createPersonRequest);
+            String phoneParameter = URLEncoder.encode(createPersonResult.personView().phoneNumber(), StandardCharsets.UTF_8);
+            return "redirect:/verifyPhone?phone=" + phoneParameter + "&userId=" + createPersonResult.personView().id();
         }
         model.addAttribute("createPersonRequest",createPersonRequest);
         model.addAttribute("errorMessage",createPersonResult.reason());

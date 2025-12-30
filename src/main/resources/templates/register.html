@@ -111,9 +111,12 @@
                 <!--ROLE-->
                 <div class="mb-3">
                     <label class="form-label" >Role: </label>
-                    <select th:field="*{type}" class="form-control" >
-                        <option style="" value="CLIENT">Client</option>
-                        <option value="TRAINER">Trainer</option>
+                    <select th:field="*{type}" class="form-control">
+                        <option th:each="ut : ${T(gr.hua.fitTrack.core.model.PersonType).values()}"
+                                th:value="${ut}"
+                                th:text="${ut}">
+                        </option>
+                    </select>
                     </select>
                 </div>
                 <!--FIRST NAME-->

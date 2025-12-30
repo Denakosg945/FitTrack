@@ -16,7 +16,6 @@ public class TrainerOverrideAvailability {
 
     @ManyToOne
     @JoinColumn(name = "trainer_id", nullable = false)
-    //TODO change to trainerProfile when Implemented
     private TrainerProfile trainerProfile;
 
     @Column(name = "date", nullable = false)

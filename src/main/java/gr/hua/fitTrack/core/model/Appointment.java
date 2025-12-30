@@ -15,7 +15,6 @@ public class Appointment {
     @Column(name = "id")
     private Long id;
 
-    //TODO CHANGE TO CLIENTPROFILE
     @ManyToOne
     @JoinColumn(name = "fk_client",nullable = false)
     private ClientProfile client;

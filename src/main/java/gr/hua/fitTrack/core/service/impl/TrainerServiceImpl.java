@@ -4,6 +4,8 @@ import gr.hua.fitTrack.core.model.Person;
 import gr.hua.fitTrack.core.model.TrainerOverrideAvailability;
 import gr.hua.fitTrack.core.model.TrainerProfile;
 import gr.hua.fitTrack.core.model.TrainerWeeklyAvailability;
+import gr.hua.fitTrack.core.port.PhoneNumberPort;
+import gr.hua.fitTrack.core.port.SmsNotificationPort;
 import gr.hua.fitTrack.core.repository.PersonRepository;
 import gr.hua.fitTrack.core.repository.TrainerProfileRepository;
 import gr.hua.fitTrack.core.service.TrainerService;
@@ -25,17 +27,23 @@ public class TrainerServiceImpl implements TrainerService {
     private final PersonRepository personRepository;
     private final TrainerMapper trainerMapper;
     private final TrainerScheduleMapper trainerScheduleMapper;
+    private final SmsNotificationPort smsNotificationPort;
 
     public  TrainerServiceImpl(TrainerProfileRepository trainerProfileRepository,
                                PersonRepository personRepository,
-                               TrainerMapper trainerMapper, TrainerScheduleMapper trainerScheduleMapper) {
+                               TrainerMapper trainerMapper, TrainerScheduleMapper trainerScheduleMapper,
+                               SmsNotificationPort smsNotificationPort
+                               ) {
         if(trainerProfileRepository == null) throw new NullPointerException("trainerProfileRepository cannot be null");
         if(personRepository == null) throw new NullPointerException("personRepository cannot be null");
         if(trainerMapper == null)  throw new NullPointerException("trainerMapper cannot be null");
+        if(trainerScheduleMapper == null)  throw new NullPointerException("trainerScheduleMapper cannot be null");
+        if(smsNotificationPort == null) throw new NullPointerException("smsNotificationPort cannot be null");
         this.trainerProfileRepository = trainerProfileRepository;
         this.personRepository = personRepository;
         this.trainerMapper = trainerMapper;
         this.trainerScheduleMapper = trainerScheduleMapper;
+        this.smsNotificationPort = smsNotificationPort;
     }
 
     @Override
@@ -71,10 +79,11 @@ public class TrainerServiceImpl implements TrainerService {
         trainerProfile = trainerProfileRepository.save(trainerProfile);
 
 
-        if(notify){
-            final String content =String.format("You have succesfully registered for the Fit Track Application as a trainer. "
+
+        final String content =String.format("You have succesfully registered for the Fit Track Application as a trainer. "
             );
-        }
+        smsNotificationPort.sendSms(person.getPhoneNumber(),content);
+
         final TrainerView trainerView = this.trainerMapper.convertTrainerToTrainerView(trainerProfile);
 
         return CreateTrainerResult.success(trainerView);

@@ -10,5 +10,9 @@ public interface PersonRepository extends JpaRepository<Person,Long> {
     // Jpa provides CRUD functions automatically
     boolean existsByEmailAddress(String emailAddress);
 
+    Person findByPhoneNumber(String phoneNumber);
+
+    void deleteByPhoneNumber(String phoneNumber);
+
     Person findByEmailAddress(String emailAddress);
 }

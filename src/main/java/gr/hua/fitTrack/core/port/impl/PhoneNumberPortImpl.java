@@ -1,6 +1,16 @@
 package gr.hua.fitTrack.core.port.impl;
 
-public class PhoneNumberPort {
+import gr.hua.fitTrack.core.port.PhoneNumberPort;
+import gr.hua.fitTrack.core.port.impl.dto.PhoneNumberValidationResult;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+@Service
+public class PhoneNumberPortImpl implements PhoneNumberPort {
+    @Value("${sms.service.url}")
+    private String smsBaseUrl;
 
     private final RestTemplate restTemplate;
 
@@ -14,11 +24,8 @@ public class PhoneNumberPort {
         if (rawPhoneNumber == null) throw new NullPointerException();
         if (rawPhoneNumber.isBlank()) throw new IllegalArgumentException();
 
-        // HTTP Request
-        // --------------------------------------------------
 
-        final String baseUrl = RestApiClientConfig.BASE_URL;
-        final String url = baseUrl + "/api/v1/phone-numbers/" + rawPhoneNumber + "/validations";
+        final String url = smsBaseUrl + "/api/v1/phone-numbers/" + rawPhoneNumber + "/validations";
         final ResponseEntity<PhoneNumberValidationResult> response
                 = this.restTemplate.getForEntity(url, PhoneNumberValidationResult.class);
 

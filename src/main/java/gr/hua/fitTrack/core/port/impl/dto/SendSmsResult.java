@@ -1,2 +1,4 @@
-package gr.hua.fitTrack.core.port.impl.dto;public record SendSmsResult() {
+package gr.hua.fitTrack.core.port.impl.dto;
+
+public record SendSmsResult(boolean sent) {
 }

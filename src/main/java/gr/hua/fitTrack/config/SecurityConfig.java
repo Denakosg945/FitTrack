@@ -17,13 +17,19 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 @EnableWebSecurity
 public class SecurityConfig {
 
+
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
+
+
 
         http
                 .authorizeHttpRequests(auth -> auth
                         // TODO remove trainerProfileCreation/**,clientProfileCreation/** when the session persists in cookies
-                        .requestMatchers("/clientProfileCreation/**","/trainerProfileCreation/**","/register","/trainers","/","/login", "/css/**", "/js/**", "/images/**").permitAll()
+                        // TODO remove deletePerson give the user a temporary cookie when he is doing 2FA authentication
+                        .requestMatchers("/deletePerson/**","/verifyPhone/**","/clientProfileCreation/**","/trainerProfileCreation/**","/register","/trainers","/","/login", "/css/**", "/js/**", "/images/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form

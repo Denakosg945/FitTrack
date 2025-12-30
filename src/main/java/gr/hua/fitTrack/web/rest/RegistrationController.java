@@ -1,6 +1,8 @@
 package gr.hua.fitTrack.web.rest;
 
+import gr.hua.fitTrack.core.model.GenderType;
 import gr.hua.fitTrack.core.model.PersonType;
+import gr.hua.fitTrack.core.repository.PersonRepository;
 import gr.hua.fitTrack.core.service.PersonService;
 import gr.hua.fitTrack.core.service.model.CreatePersonRequest;
 import gr.hua.fitTrack.core.service.model.CreatePersonResult;
@@ -25,11 +27,13 @@ public class RegistrationController {
      * Serves the registration form (HTML).
      */
     private final PersonService personService;
+    private final PersonRepository personRepository;
 
-    public RegistrationController(final PersonService personService) {
+    public RegistrationController(final PersonService personService, PersonRepository personRepository) {
 
         if (personService == null) throw new NullPointerException("personService is null");
         this.personService = personService;
+        this.personRepository = personRepository;
     }
 
 
@@ -38,7 +42,7 @@ public class RegistrationController {
 
         //TODO if user is authenticated, redirect to
         //Initial data for the form.
-        final CreatePersonRequest createPersonRequest = new CreatePersonRequest("","",-1,"","","", PersonType.CLIENT);
+        final CreatePersonRequest createPersonRequest = new CreatePersonRequest("","",-1, GenderType.MALE,"","","", PersonType.CLIENT);
         model.addAttribute("createPersonRequest",createPersonRequest);
 
         return "register"; //the name of the thymeleaf/HTML template.
@@ -65,7 +69,6 @@ public class RegistrationController {
         }
         model.addAttribute("createPersonRequest",createPersonRequest);
         model.addAttribute("errorMessage",createPersonResult.reason());
-
 
         return "register";
     }

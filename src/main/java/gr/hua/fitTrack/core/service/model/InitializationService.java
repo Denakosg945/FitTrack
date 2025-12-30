@@ -1,5 +1,6 @@
 package gr.hua.fitTrack.core.service.model;
 
+import gr.hua.fitTrack.core.model.GenderType;
 import gr.hua.fitTrack.core.model.PersonType;
 import gr.hua.fitTrack.core.model.Weekday;
 import gr.hua.fitTrack.core.service.PersonService;
@@ -100,6 +101,7 @@ public class InitializationService {
                     first,
                     last,
                     25 + random.nextInt(20), // age 25–45
+                    GenderType.MALE,
                     email,
                     "+3069000000" + String.format("%02d", i),
                     "pass" + i,

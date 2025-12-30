@@ -1,11 +1,10 @@
 package gr.hua.fitTrack.core.service.impl;
 
-import gr.hua.fitTrack.core.exception.SendSmsException;
+import gr.hua.fitTrack.core.model.GenderType;
 import gr.hua.fitTrack.core.model.Person;
 import gr.hua.fitTrack.core.model.PersonType;
 import gr.hua.fitTrack.core.port.PhoneNumberPort;
 import gr.hua.fitTrack.core.port.SmsNotificationPort;
-import gr.hua.fitTrack.core.port.impl.SmsNotificationPortImpl;
 import gr.hua.fitTrack.core.repository.PersonRepository;
 import gr.hua.fitTrack.core.service.PersonService;
 import gr.hua.fitTrack.core.service.mapper.PersonMapper;
@@ -65,6 +64,7 @@ public class PersonServiceImpl implements PersonService {
         final String fistName = createPersonRequest.firstName();
         final String lastName = createPersonRequest.lastName();
         final int age = createPersonRequest.age();
+        final GenderType gender = createPersonRequest.gender();
         final String emailAddress = createPersonRequest.emailAddress();
         final String phoneNumber = createPersonRequest.phoneNumber();
         final String rawPassword = createPersonRequest.rawPassword();
@@ -79,13 +79,17 @@ public class PersonServiceImpl implements PersonService {
         person.setFirstName(fistName);
         person.setLastName(lastName);
         person.setAge(age);
+        person.setGender(gender);
         person.setEmailAddress(emailAddress);
         person.setPhoneNumber(phoneNumber);
         person.setPasswordHash(hashedPassword);
         person.setType(type);
 
         //Validate phone number
-        if(!phoneNumberPort.validate(phoneNumber).isValid()) throw new IllegalArgumentException("Phone number is not valid");
+        if(!phoneNumberPort.validate(phoneNumber).isValid()){
+
+            return CreatePersonResult.fail("Phone number is not valid");
+        }
 
         //Save person to the database
 

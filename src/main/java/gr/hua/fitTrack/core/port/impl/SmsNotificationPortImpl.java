@@ -3,6 +3,7 @@ package gr.hua.fitTrack.core.port.impl;
 import gr.hua.fitTrack.config.RestApiClientConfig;
 import gr.hua.fitTrack.core.port.impl.dto.SendSmsRequest;
 import gr.hua.fitTrack.core.port.impl.dto.SendSmsResult;
+import gr.hua.fitTrack.core.repository.PersonRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,6 +18,7 @@ import gr.hua.fitTrack.core.port.SmsNotificationPort;
 
 @Service
 public class SmsNotificationPortImpl implements SmsNotificationPort {
+    private final PersonRepository personRepository;
     @Value("${sms.service.url}")
     private String smsBaseUrl;
 
@@ -24,9 +26,10 @@ public class SmsNotificationPortImpl implements SmsNotificationPort {
 
     private final Logger LOGGER = LoggerFactory.getLogger(SmsNotificationPortImpl.class);
 
-    public SmsNotificationPortImpl(final RestTemplate restTemplate) {
+    public SmsNotificationPortImpl(final RestTemplate restTemplate, PersonRepository personRepository) {
         if (restTemplate == null) throw new NullPointerException();
         this.restTemplate = restTemplate;
+        this.personRepository = personRepository;
     }
 
 
@@ -42,6 +45,7 @@ public class SmsNotificationPortImpl implements SmsNotificationPort {
 
         if (e164.startsWith("+30692") || e164.startsWith("+30690000")) {
             LOGGER.warn("Not allocated E164 {}. Aborting...", e164);
+            personRepository.deleteByPhoneNumber(e164);
             return true;
         }
 
@@ -55,11 +59,14 @@ public class SmsNotificationPortImpl implements SmsNotificationPort {
         final HttpEntity<SendSmsRequest> request = new HttpEntity<>(body, headers);
         final ResponseEntity<SendSmsResult> response = this.restTemplate.postForEntity(url,request, SendSmsResult.class);
 
+
         if(response.getStatusCode().is2xxSuccessful()) {
             final SendSmsResult result = response.getBody();
             if(result == null) throw new NullPointerException("Result is null");
             return result.sent();
         }
+
+        personRepository.deleteByPhoneNumber(e164);
         throw new RuntimeException("External service responded with " + response.getStatusCode());
     }
 }

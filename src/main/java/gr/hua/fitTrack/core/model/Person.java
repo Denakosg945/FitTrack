@@ -37,6 +37,10 @@ public class Person {
     @Column(name = "age", nullable = false, length = 3)
     private int age;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "gender", nullable = false)
+    private GenderType gender;
+
     @Column(name = "email_address",nullable = false, length = 100)
     private String emailAddress;
 
@@ -58,7 +62,7 @@ public class Person {
 
     }
 
-    public Person(String firstName, String lastName, int age, String emailAddress, String phoneNumber, String passwordHash, PersonType type, Instant createdAt) {
+    public Person(String firstName, String lastName, int age,GenderType gender ,String emailAddress, String phoneNumber, String passwordHash, PersonType type, Instant createdAt) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.age = age;
@@ -67,6 +71,7 @@ public class Person {
         this.passwordHash = passwordHash;
         this.type = type;
         this.createdAt = createdAt;
+        this.gender = gender;
     }
 
     public Long getId() {
@@ -141,6 +146,13 @@ public class Person {
         this.createdAt = createdAt;
     }
 
+    public GenderType getGender() {
+        return gender;
+    }
+
+    public void setGender(GenderType gender) {
+        this.gender = gender;
+    }
 
     @Override
     public String toString(){

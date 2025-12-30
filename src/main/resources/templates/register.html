@@ -134,6 +134,16 @@
                     <label class="form-label">Age: </label>
                     <input th:field="*{age}" placeholder = "Age" required  class="form-control">
                 </div>
+                <!--GENDER-->
+                <div class="mb-3">
+                    <label class="form-label" >Gender: </label>
+                    <select th:field="*{gender}" class="form-control">
+                        <option th:each="ut : ${T(gr.hua.fitTrack.core.model.GenderType).values()}"
+                                th:value="${ut}"
+                                th:text="${ut}">
+                        </option>
+                    </select>
+                </div>
                 <!--EMAIL-->
                 <div class="mb-3">
                     <label class="form-label">Email: </label>

@@ -31,9 +31,9 @@ public class PhoneNumberPortImpl implements PhoneNumberPort {
 
         if (response.getStatusCode().is2xxSuccessful()) {
             final PhoneNumberValidationResult phoneNumberValidationResult = response.getBody();
-            if (phoneNumberValidationResult == null) throw new NullPointerException();
             return phoneNumberValidationResult;
         }
+
 
         throw new RuntimeException("External service responded with " + response.getStatusCode());
     }

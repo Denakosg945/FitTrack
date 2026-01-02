@@ -14,68 +14,88 @@ import gr.hua.fitTrack.core.service.model.CreateClientResult;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 @Service
 public class ClientServiceImpl implements ClientService {
 
-    public final ClientProfileRepository clientProfileRepository;
-    public final PersonRepository personRepository;
-    public final ClientMapper clientMapper;
+    private final ClientProfileRepository clientProfileRepository;
+    private final PersonRepository personRepository;
+    private final ClientMapper clientMapper;
     private final SmsNotificationPort smsNotificationPort;
 
-
     public ClientServiceImpl(ClientProfileRepository clientProfileRepository,
-                             PersonRepository personRepository, ClientMapper clientMapper, SmsNotificationPort smsNotificationPort) {
-        if(clientProfileRepository ==null) throw new NullPointerException("clientProfileRepository is null");
-        if(personRepository ==null) throw new NullPointerException("personRepository is null");
-        if(clientMapper ==null) throw new NullPointerException("clientMapper is null");
-        if(smsNotificationPort ==null) throw new NullPointerException("smsNotificationPort is null");
+                             PersonRepository personRepository,
+                             ClientMapper clientMapper,
+                             SmsNotificationPort smsNotificationPort) {
+
+        if (clientProfileRepository == null) throw new NullPointerException("clientProfileRepository is null");
+        if (personRepository == null) throw new NullPointerException("personRepository is null");
+        if (clientMapper == null) throw new NullPointerException("clientMapper is null");
+        if (smsNotificationPort == null) throw new NullPointerException("smsNotificationPort is null");
+
         this.clientProfileRepository = clientProfileRepository;
         this.personRepository = personRepository;
-        this.clientMapper = new ClientMapper();
+        this.clientMapper = clientMapper;
         this.smsNotificationPort = smsNotificationPort;
-
     }
+
     @Override
     @Transactional
-    public CreateClientResult createClientProfile(final CreateClientRequest createClientRequest, final boolean notify){
-        if (createClientRequest == null) throw new  NullPointerException("createClientRequest is null");
+    public CreateClientResult createClientProfile(final CreateClientRequest createClientRequest,
+                                                  final boolean notify) {
 
-        final Person person = personRepository.getReferenceById(createClientRequest.personId());
-        final int weight =  createClientRequest.weight();
-        final int height =  createClientRequest.height();
-        final Integer runningTimeGoal = createClientRequest.runningTimeGoal();
-        final Integer weightGoal = createClientRequest.targetWeight();
-        final Integer bodyPercentageGoal = createClientRequest.targetBodyFat();
+        if (createClientRequest == null)
+            throw new NullPointerException("createClientRequest is null");
 
+        final Person person = personRepository.findById(createClientRequest.personId())
+                .orElseThrow(() ->
+                        new IllegalArgumentException(
+                                "Person not found with id " + createClientRequest.personId()
+                        )
+                );
 
         ClientProfile clientProfile = new ClientProfile();
-
         clientProfile.setPerson(person);
-        clientProfile.setWeight(weight);
-        clientProfile.setHeight(height);
-        Goals goals = new Goals();
-
-        //Create Goal
-        goals.setBodyFatPercentageGoal(bodyPercentageGoal);
-        goals.setWeightGoal(weightGoal);
-        goals.setRunningTimeGoal(runningTimeGoal);
-        goals.setClient(clientProfile);
-
-        clientProfile.setGoals(goals);
+        clientProfile.setWeight(createClientRequest.weight());
+        clientProfile.setHeight(createClientRequest.height());
         clientProfile.setProgress(null);
+
+        // ✅ Δημιουργία Goals ΜΟΝΟ αν υπάρχει έστω ένα goal
+        if (createClientRequest.targetWeight() != null
+                || createClientRequest.targetBodyFat() != null
+                || createClientRequest.runningTimeGoal() != null) {
+
+            Goals goals = new Goals();
+            goals.setClient(clientProfile);
+
+            if (createClientRequest.targetWeight() != null) {
+                goals.setWeightGoal(createClientRequest.targetWeight());
+            }
+
+            if (createClientRequest.targetBodyFat() != null) {
+                goals.setBodyFatPercentageGoal(createClientRequest.targetBodyFat());
+            }
+
+            if (createClientRequest.runningTimeGoal() != null) {
+                goals.setRunningTimeGoal(createClientRequest.runningTimeGoal());
+            }
+
+            clientProfile.setGoals(goals);
+        } else {
+            clientProfile.setGoals(null);
+        }
 
         clientProfile = clientProfileRepository.save(clientProfile);
 
+        if (notify) {
+            final String content =
+                    "You have succesfully registered for the Fit Track Application as a client.";
+            smsNotificationPort.sendSms(person.getPhoneNumber(), content);
+        }
 
-        final String content = String.format("You have succesfully registered for the Fit Track Application as a client.");
-        smsNotificationPort.sendSms(person.getPhoneNumber(),content);
-
-        final ClientView clientView = this.clientMapper.converClientToClientView(clientProfile);
+        final ClientView clientView =
+                clientMapper.converClientToClientView(clientProfile);
 
         return CreateClientResult.success(clientView);
-
     }
-
 }
+

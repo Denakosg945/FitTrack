@@ -7,16 +7,19 @@ import gr.hua.fitTrack.core.repository.PersonRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import gr.hua.fitTrack.core.port.SmsNotificationPort;
 
 
-@Service
+@Component
+@Profile("!dev")
 public class SmsNotificationPortImpl implements SmsNotificationPort {
     private final PersonRepository personRepository;
     @Value("${sms.service.url}")

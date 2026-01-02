@@ -5,6 +5,7 @@ import gr.hua.fitTrack.core.model.PersonType;
 import gr.hua.fitTrack.core.model.Weekday;
 import gr.hua.fitTrack.core.service.PersonService;
 import gr.hua.fitTrack.core.service.TrainerService;
+import gr.hua.fitTrack.core.service.ClientService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -21,17 +22,20 @@ public class InitializationService {
 
     private final PersonService personService;
     private final TrainerService trainerService;
+    private final ClientService clientService;
 
     public InitializationService(PersonService personService,
-                                 TrainerService trainerService) {
+                                 TrainerService trainerService,
+                                 ClientService clientService) {
         this.personService = personService;
         this.trainerService = trainerService;
+        this.clientService = clientService;
     }
 
     public void populateDatabase() {
 
         /**
-         * Run only if table TrainerProfiles is emply
+         * Run only if table TrainerProfiles is empty
          */
 
         if (trainerService.countTrainerProfiles() > 0) {
@@ -66,28 +70,25 @@ public class InitializationService {
 
         List<String> locations = List.of(
                 "Vironas", "Kallithea", "Kypseli", "Pagrati", "Marousi",
-                "Chalandri", "Nea Smyrni", "Zografou", "Glyfada", "Peristeri",
-                "Petroupoli", "Aigaleo", "Ilion", "Tavros", "Moschato",
-                "Galatsi", "Ampelokipoi", "Holargos", "Metamorfosi", "Keratsini"
+                "Chalandri", "Nea Smyrni", "Zografou", "Glyfada", "Peristeri"
         );
 
         List<String> specializations = List.of(
-                "Strength Training", "Body Building", "Fat Loss", "Yoga", "Pilates",
-                "CrossFit", "Cardio Training", "Endurance Coaching",
-                "Mobility Training", "Aerobic"
+                "Strength Training", "Body Building", "Fat Loss", "Yoga",
+                "CrossFit", "Cardio Training"
         );
 
         Random random = new Random();
 
         /*
-                  Person is created before trainerProfile.
-                  Every person's id is put in here so that
-                  we can create a trainerProfile for them later.
+          Person is created before trainerProfile.
+          Every person's id is put in here so that
+          we can create a trainerProfile for them later.
          */
-        List<Long> trainerPersonIdsNeedingProfile = new ArrayList<>();
+        List<Long> trainerPersonIds = new ArrayList<>();
 
         /*
-          Create 100 person with random data from data pools
+          Create 100 TRAINER persons
          */
 
         for (int i = 0; i < 100; i++) {
@@ -95,7 +96,7 @@ public class InitializationService {
             String first = firstNames.get(random.nextInt(firstNames.size()));
             String last = lastNames.get(random.nextInt(lastNames.size()));
 
-            String email = (first + "." + last + i + "@fittrack.com").toLowerCase();
+            String email = (first + "." + last + ".trainer" + i + "@fittrack.com").toLowerCase();
 
             CreatePersonRequest request = new CreatePersonRequest(
                     first,
@@ -103,31 +104,33 @@ public class InitializationService {
                     25 + random.nextInt(20), // age 25–45
                     GenderType.MALE,
                     email,
-                    "+3069000000" + String.format("%02d", i),
+                    "+30690001" + String.format("%03d", i),
                     "pass" + i,
                     PersonType.TRAINER
             );
 
-            CreatePersonResult createdPerson = personService.createPerson(request);
-            //ad the ID of the person just created to create the trainerProfile next
-            trainerPersonIdsNeedingProfile.add(createdPerson.personView().id());
+            CreatePersonResult result = personService.createPerson(request);
+
+            if (!result.created()) {
+                LOGGER.error("Trainer person creation failed for {} → {}", email, result.reason());
+                continue;
+            }
+
+            trainerPersonIds.add(result.personView().id());
         }
 
-        LOGGER.info("Created {} Person records.", trainerPersonIdsNeedingProfile.size());
+        LOGGER.info("Created {} TRAINER persons.", trainerPersonIds.size());
 
         /*
-          Create trainerProfiles for the people just created
+          Create trainerProfiles for trainers
          */
 
-        for (Long personId : trainerPersonIdsNeedingProfile) {
-
-            String location = locations.get(random.nextInt(locations.size()));
-            String specialization = specializations.get(random.nextInt(specializations.size()));
+        for (Long personId : trainerPersonIds) {
 
             CreateTrainerRequest trainerRequest = new CreateTrainerRequest(
                     personId,
-                    location,
-                    specialization,
+                    locations.get(random.nextInt(locations.size())),
+                    specializations.get(random.nextInt(specializations.size())),
                     "Auto-generated trainer profile",
                     Map.of(
                             Weekday.MONDAY, "09:00",
@@ -142,12 +145,70 @@ public class InitializationService {
             );
 
             CreateTrainerResult result = trainerService.createTrainerProfile(trainerRequest);
+
             if (!result.created()) {
                 LOGGER.error("Trainer profile creation failed for person {} → {}", personId, result.reason());
             }
         }
 
         LOGGER.info("100 trainer profiles created successfully!");
+
+        /*
+          Create 100 CLIENT persons + client profiles
+         */
+
+        int clientsCreated = 0;
+
+        for (int i = 0; i < 100; i++) {
+
+            String first = firstNames.get(random.nextInt(firstNames.size()));
+            String last = lastNames.get(random.nextInt(lastNames.size()));
+
+            String email = (first + "." + last + ".client" + i + "@fittrack.com").toLowerCase();
+
+            CreatePersonRequest personRequest = new CreatePersonRequest(
+                    first,
+                    last,
+                    18 + random.nextInt(30), // age 18–48
+                    GenderType.FEMALE,
+                    email,
+                    "+30691001" + String.format("%03d", i),
+                    "pass" + i,
+                    PersonType.CLIENT
+            );
+
+            CreatePersonResult personResult = personService.createPerson(personRequest);
+
+            if (!personResult.created()) {
+                LOGGER.error("Client person creation failed for {} → {}", email, personResult.reason());
+                continue;
+            }
+
+            /*
+              Create clientProfile for the client person
+             */
+
+            CreateClientRequest clientRequest = new CreateClientRequest(
+                    personResult.personView().id(),
+                    60 + random.nextInt(30),   // weight
+                    155 + random.nextInt(25),  // height
+                    null,
+                    null,
+                    null
+            );
+
+            CreateClientResult clientResult = clientService.createClientProfile(clientRequest);
+
+            if (!clientResult.created()) {
+                LOGGER.error("Client profile creation failed for person {} → {}",
+                        personResult.personView().id(), clientResult.reason());
+                continue;
+            }
+
+            clientsCreated++;
+        }
+
+        LOGGER.info("{} CLIENT persons + profiles created successfully!", clientsCreated);
         LOGGER.info("Database initialization completed.");
     }
 }

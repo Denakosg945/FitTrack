@@ -4,7 +4,9 @@ import gr.hua.fitTrack.core.service.TrainerService;
 import gr.hua.fitTrack.core.service.model.InitializationService;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.stereotype.Component;
 
+@Component
 public class StartupRunner implements ApplicationListener<ContextRefreshedEvent> {
 
     private final InitializationService initializationService;

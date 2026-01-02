@@ -7,9 +7,13 @@ spring:
     username: postgresTest
     password: postgresTestPassword
 
-    jpa:
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
       hibernate:
-        ddl-auto: validate
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        default_schema: public
 
 
 sms:

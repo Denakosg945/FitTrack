@@ -7,9 +7,10 @@ spring:
     username: postgresTest
     password: postgresTestPassword
 
-    jpa:
-      hibernate:
-        ddl-auto: validate
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
 
 
 sms:

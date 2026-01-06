@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fit Track | Weekly Schedule</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const form = document.getElementById("weeklyScheduleForm");
+            const errorBox = document.getElementById("scheduleError");
+
+            form.addEventListener("submit", function (event) {
+
+                errorBox.classList.add("d-none");
+                errorBox.innerText = "";
+
+                const startSelects = document.querySelectorAll(".start-time");
+                const endSelects   = document.querySelectorAll(".end-time");
+
+                for (let i = 0; i < startSelects.length; i++) {
+                    const start = startSelects[i].value;
+                    const end   = endSelects[i].value;
+                    const day   = startSelects[i].dataset.day;
+
+                    if ((start && !end) || (!start && end)) {
+                        showError(`For ${day}: both start and end time must be selected`);
+                        event.preventDefault();
+                        return;
+                    }
+
+                    if (start && end && start >= end) {
+                        showError(`For ${day}: start time must be before end time`);
+                        event.preventDefault();
+                        return;
+                    }
+                }
+            });
+
+            function showError(message) {
+                errorBox.innerText = message;
+                errorBox.classList.remove("d-none");
+                errorBox.scrollIntoView({ behavior: "smooth" });
+            }
+        });
+    </script>
+
+    <style>
+        .container { max-width: 900px; margin-top: 40px; }
+        .card { border: 3px solid #533434; box-shadow: 10px 10px 0 #533434; }
+        .card-header {
+            background: #533434;
+            color: white;
+            text-align: center;
+            font-size: 1.5rem;
+        }
+        .schedule-row {
+            display: grid;
+            grid-template-columns: 140px 80px 1fr 80px 1fr;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .day-label { font-weight: bold; }
+        .btn-save {
+            background: #533434;
+            color: white;
+            padding: 10px 40px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <div class="card">
+        <div class="card-header">Weekly Training Schedule</div>
+
+        <div class="card-body">
+
+            <form th:action="@{/trainer/profile/edit/schedule}"
+                  method="post"
+                  id="weeklyScheduleForm">
+
+                <input type="hidden"
+                       name="personId"
+                       th:value="${trainer.personId}"/>
+
+                <div th:each="day : ${days}">
+                    <div class="schedule-row">
+
+                        <div class="day-label"
+                             th:text="${#strings.capitalize(day.name().toLowerCase())}">
+                        </div>
+
+                        <div>Start</div>
+                        <select class="form-select start-time"
+                                th:name="'startTimes[' + ${day.name()} + ']'"
+                                th:data-day="${day.name()}">
+
+                            <option value="">N/A</option>
+                            <option th:each="t : ${timeOptions}"
+                                    th:value="${t}"
+                                    th:text="${t}"
+                                    th:selected="${availability[day.name()] != null
+                                        and availability[day.name()].startTime != null
+                                        and availability[day.name()].startTime.toString() == t}">
+                            </option>
+                        </select>
+
+                        <div>End</div>
+                        <select class="form-select end-time"
+                                th:name="'endTimes[' + ${day.name()} + ']'"
+                                th:data-day="${day.name()}">
+
+                            <option value="">N/A</option>
+                            <option th:each="t : ${timeOptions}"
+                                    th:value="${t}"
+                                    th:text="${t}"
+                                    th:selected="${availability[day.name()] != null
+                                        and availability[day.name()].endTime != null
+                                        and availability[day.name()].endTime.toString() == t}">
+                            </option>
+                        </select>
+
+                    </div>
+                </div>
+
+                <div id="scheduleError"
+                     class="alert alert-danger d-none text-center">
+                </div>
+
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-save">
+                        Save Weekly Schedule
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

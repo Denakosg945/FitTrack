@@ -3,11 +3,12 @@ package gr.hua.fitTrack.core.service;
 import gr.hua.fitTrack.core.model.TrainerOverrideAvailability;
 import gr.hua.fitTrack.core.model.TrainerProfile;
 import gr.hua.fitTrack.core.model.TrainerWeeklyAvailability;
-import gr.hua.fitTrack.core.service.model.CreateTrainerRequest;
-import gr.hua.fitTrack.core.service.model.CreateTrainerResult;
-import gr.hua.fitTrack.core.service.model.TrainerView;
+import gr.hua.fitTrack.core.model.Weekday;
+import gr.hua.fitTrack.core.service.model.*;
 
+import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
 
 public interface TrainerService {
 
@@ -16,6 +17,12 @@ public interface TrainerService {
     default CreateTrainerResult createTrainerProfile(final CreateTrainerRequest createTrainerRequest) {
         return this.createTrainerProfile(createTrainerRequest, false);
     }
+
+    void updateTrainerProfile(UpdateTrainerProfileRequest form);
+
+    TrainerView getTrainerProfileByEmail(String email);
+
+    TrainerView getTrainerProfileByPersonId(Long personId);
 
     boolean existsByTrainerPersonId(Long personId);
 
@@ -31,16 +38,26 @@ public interface TrainerService {
 
     List<TrainerView> search(String name, String location, String specialization);
 
-    TrainerProfile updateTrainerProfile(int trainerProfileId, String specialization, String bio, String location);
+    TrainerProfile getTrainerProfile(Long trainerProfileId);
 
-    TrainerProfile getTrainerProfile(int trainerProfileId);
+    boolean existsByTrainerProfileId(Long trainerProfileId);
 
-    boolean existsByTrainerProfileId(int trainerProfileId);
+    List<TrainerWeeklyAvailability> getWeeklyAvailability(Long trainerProfileId);
 
-    List<TrainerWeeklyAvailability> getWeeklyAvailability(int trainerProfileId);
+    void saveWeeklyAvailability(Long trainerProfileId, List<TrainerWeeklyAvailability> weeklyAvailability);
 
-    void saveWeeklyAvailability(int trainerProfileId, List<TrainerWeeklyAvailability> weeklyAvailability);
+    void deleteWeeklyAvailability(Long trainerProfileId, List<TrainerWeeklyAvailability> weeklyAvailability);
 
-    void deleteWeeklyAvailability(int trainerProfileId, List<TrainerWeeklyAvailability> weeklyAvailability);
+    void updateWeeklyAvailability(
+            Long personId,
+            Map<Weekday, LocalTime> startTimes,
+            Map<Weekday, LocalTime> endTimes
+    );
+
+    public void createOrUpdateOverride(TrainerOverrideRequest request);
+
+    public List<TrainerDailyScheduleView>
+    getTrainerScheduleForNext7Days(Long personId);
+
 
 }

@@ -6,6 +6,8 @@ import gr.hua.fitTrack.core.service.model.CreatePersonResult;
 import gr.hua.fitTrack.core.service.model.PendingRegistration;
 import gr.hua.fitTrack.core.service.model.PersonView;
 
+import java.util.Optional;
+
 public interface PersonService {
 
     CreatePersonResult createPerson(final CreatePersonRequest createPersonRequest, final boolean notify);
@@ -14,7 +16,9 @@ public interface PersonService {
         return this.createPerson(createPersonRequest, true);
     }
 
-    Person getByEmail(final String email);
+    long countPersons();
+
+    Optional<Person> getByEmail(final String email);
 
     boolean existsByEmail(String email);
 

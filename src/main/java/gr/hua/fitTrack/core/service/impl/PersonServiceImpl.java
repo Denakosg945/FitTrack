@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import java.security.SecureRandom;
 import java.time.Instant;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -57,6 +58,11 @@ public class PersonServiceImpl implements PersonService {
         this.smsNotificationPort = smsNotificationPort;
         this.phoneNumberPort = phoneNumberPort;
     }
+    @Override
+    public long countPersons() {
+        return personRepository.count();
+    }
+
     @Override
     public CreatePersonResult createPerson(final CreatePersonRequest createPersonRequest,final boolean notify){
         if (createPersonRequest == null) throw new IllegalArgumentException("createPersonRequest cannot be null");
@@ -114,7 +120,7 @@ public class PersonServiceImpl implements PersonService {
     }
 
     @Override
-    public Person getByEmail(String email) {
+    public Optional<Person> getByEmail(String email) {
         return personRepository.findByEmailAddress(email);
     }
 

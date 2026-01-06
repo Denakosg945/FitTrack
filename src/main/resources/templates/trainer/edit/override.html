@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fit Track | Override Availability</title>
+
+    <link rel="icon" type="image/ico" href="/images/favicon.ico">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        .form-container {
+            margin: 40px auto;
+            max-width: 700px;
+            box-shadow: 12px 12px 0px #533434;
+            border: 4px solid #b6b6b6;
+            padding: 30px;
+        }
+
+        .form-label {
+            text-transform: uppercase;
+            font-weight: bold;
+            letter-spacing: 1px;
+            color: darkgrey;
+            font-size: 12px;
+        }
+
+        .btn-primary {
+            background: #533434;
+            border: 0;
+            padding: 0.5em 4em;
+        }
+
+        .btn-primary:hover {
+            background: #939393;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1 class="text-center mt-4">Override Specific Day</h1>
+
+<div class="form-container">
+
+    <form th:action="@{/trainer/profile/edit/override}"
+          th:object="${form}"
+          method="post">
+
+        <!-- PERSON ID -->
+        <input type="hidden" th:field="*{personId}"/>
+
+        <!-- DATE -->
+        <div class="mb-4">
+            <label class="form-label">Date</label>
+            <input type="date"
+                   class="form-control"
+                   th:field="*{date}"
+                   required>
+        </div>
+
+        <!-- AVAILABLE -->
+        <div class="mb-4">
+            <label class="form-label">Availability</label>
+
+            <div class="form-check">
+                <input class="form-check-input"
+                       type="radio"
+                       th:field="*{available}"
+                       th:value="true"
+                       id="availableYes"
+                       checked>
+                <label class="form-check-label" for="availableYes">
+                    Available (custom hours)
+                </label>
+            </div>
+
+            <div class="form-check">
+                <input class="form-check-input"
+                       type="radio"
+                       th:field="*{available}"
+                       th:value="false"
+                       id="availableNo">
+                <label class="form-check-label" for="availableNo">
+                    Not available all day
+                </label>
+            </div>
+        </div>
+
+        <!-- TIME RANGE -->
+        <div class="mb-4" id="workingHoursSection">
+            <label class="form-label">Working Hours</label>
+
+            <div class="row">
+                <div class="col">
+                    <select class="form-select"
+                            th:field="*{startTime}">
+                        <option value="">Start</option>
+                        <option th:each="t : ${timeOptions}"
+                                th:value="${t}"
+                                th:text="${t}">
+                        </option>
+                    </select>
+                </div>
+
+                <div class="col">
+                    <select class="form-select"
+                            th:field="*{endTime}">
+                        <option value="">End</option>
+                        <option th:each="t : ${timeOptions}"
+                                th:value="${t}"
+                                th:text="${t}">
+                        </option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ACTIONS -->
+        <div class="d-flex justify-content-between mt-5">
+            <a th:href="@{/trainer/profile}"
+               class="btn btn-secondary">
+                Cancel
+            </a>
+
+            <button type="submit"
+                    class="btn btn-primary text-light">
+                Save Override
+            </button>
+        </div>
+
+    </form>
+</div>
+
+</body>
+</html>
+<script>
+    function toggleWorkingHours() {
+        const availableYes = document.getElementById("availableYes");
+        const workingHours = document.getElementById("workingHoursSection");
+
+        if (availableYes.checked) {
+            workingHours.style.display = "block";
+        } else {
+            workingHours.style.display = "none";
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const radios = document.querySelectorAll('input[name="available"]');
+
+        radios.forEach(radio => {
+            radio.addEventListener("change", toggleWorkingHours);
+        });
+
+        toggleWorkingHours(); // initial state
+    });
+</script>
+<script>
+    document.querySelector("form").addEventListener("submit", function (e) {
+        const availableYes = document.getElementById("availableYes").checked;
+
+        if (availableYes) {
+            const start = document.querySelector('[name="startTime"]').value;
+            const end   = document.querySelector('[name="endTime"]').value;
+
+            if (!start || !end) {
+                alert("Please select both start and end time.");
+                e.preventDefault();
+                return;
+            }
+
+            if (start >= end) {
+                alert("Start time must be before end time.");
+                e.preventDefault();
+            }
+        }
+    });
+</script>

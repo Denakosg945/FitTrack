@@ -59,5 +59,8 @@ public interface TrainerService {
     public List<TrainerDailyScheduleView>
     getTrainerScheduleForNext7Days(Long personId);
 
+    List<TrainerAppointmentView> getTrainerAppointmentsNext7Days(Long personId);
+
+
 
 }

@@ -1,9 +1,10 @@
 package gr.hua.fitTrack.core.service.model;
 
-import gr.hua.fitTrack.core.model.GenderType;
-import gr.hua.fitTrack.core.model.Person;
-import gr.hua.fitTrack.core.model.PersonType;
-import gr.hua.fitTrack.core.model.Weekday;
+import gr.hua.fitTrack.core.model.*;
+import gr.hua.fitTrack.core.repository.AppointmentRepository;
+import gr.hua.fitTrack.core.repository.ClientProfileRepository;
+import gr.hua.fitTrack.core.repository.TrainerClientNotesRepository;
+import gr.hua.fitTrack.core.repository.TrainerProfileRepository;
 import gr.hua.fitTrack.core.service.ClientService;
 import gr.hua.fitTrack.core.service.PersonService;
 import gr.hua.fitTrack.core.service.TrainerService;
@@ -11,7 +12,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.*;
 
 @Service
@@ -25,12 +29,44 @@ public class InitializationService {
     private final TrainerService trainerService;
     private final ClientService clientService;
 
+    private final TrainerProfileRepository trainerProfileRepository;
+    private final ClientProfileRepository clientProfileRepository;
+    private final AppointmentRepository appointmentRepository;
+    private final TrainerClientNotesRepository trainerClientNotesRepository;
+
+    private Optional<LocalTime[]> resolveWeeklyWorkingHours(
+            TrainerProfile trainer,
+            LocalDate date
+    ) {
+        Weekday weekday = Weekday.from(date);
+
+        return trainer.getWeeklyAvailability().stream()
+                .filter(w -> w.getWeekday() == weekday)
+                .findFirst()
+                .flatMap(w -> {
+                    if (w.getStartTime() == null || w.getEndTime() == null) {
+                        return Optional.empty();
+                    }
+                    return Optional.of(
+                            new LocalTime[]{ w.getStartTime(), w.getEndTime() }
+                    );
+                });
+    }
+
     public InitializationService(PersonService personService,
                                  TrainerService trainerService,
-                                 ClientService clientService) {
+                                 ClientService clientService,
+                                 TrainerProfileRepository trainerProfileRepository,
+                                 ClientProfileRepository clientProfileRepository,
+                                 AppointmentRepository appointmentRepository,
+                                 TrainerClientNotesRepository trainerClientNotesRepository) {
         this.personService = personService;
         this.trainerService = trainerService;
         this.clientService = clientService;
+        this.trainerProfileRepository = trainerProfileRepository;
+        this.clientProfileRepository = clientProfileRepository;
+        this.appointmentRepository = appointmentRepository;
+        this.trainerClientNotesRepository = trainerClientNotesRepository;
     }
 
     public void populateDatabase() {
@@ -222,6 +258,8 @@ public class InitializationService {
             if (client.created()) clientsCreated++;
         }
 
+        createDevAppointments();
+
         /* -------------------------------------------------
            SUMMARY
          ------------------------------------------------- */
@@ -233,4 +271,113 @@ public class InitializationService {
         LOGGER.info("Persons   : {}", personService.countPersons());
         LOGGER.info("======================================");
     }
+    @Transactional
+    public void createDevAppointments() {
+
+        Optional<Person> personOpt =
+                personService.getByEmail("test.trainer@fittrack.com");
+
+        if (personOpt.isEmpty()) return;
+
+        Optional<TrainerProfile> trainerOpt =
+                trainerProfileRepository.findByPersonIdWithWeeklyAvailability(
+                        personOpt.get().getId()
+                );
+
+        if (trainerOpt.isEmpty()) return;
+
+        TrainerProfile trainer = trainerOpt.get();
+
+        List<ClientProfile> clients =
+                clientProfileRepository.findAll();
+
+        if (clients.isEmpty()) return;
+
+        Random random = new Random();
+        LocalDate today = LocalDate.now();
+
+        int created = 0;
+
+        for (int d = 0; d < 7; d++) {
+
+            LocalDate date = today.plusDays(d);
+
+            Optional<LocalTime[]> hoursOpt =
+                    resolveWeeklyWorkingHours(trainer, date);
+
+            if (hoursOpt.isEmpty()) continue;
+
+            LocalTime start = hoursOpt.get()[0];
+            LocalTime end   = hoursOpt.get()[1];
+
+            int totalSlots =
+                    end.getHour() - start.getHour();
+
+            if (totalSlots <= 0) continue;
+
+            int perDay = random.nextInt(3); // 0–2 appointments/day
+
+            Set<Integer> usedSlots = new HashSet<>();
+
+            for (int i = 0; i < perDay; i++) {
+
+                int slot;
+                do {
+                    slot = random.nextInt(totalSlots);
+                } while (usedSlots.contains(slot));
+
+                usedSlots.add(slot);
+
+                LocalTime slotStart = start.plusHours(slot);
+                LocalTime slotEnd   = slotStart.plusHours(1);
+
+                ClientProfile client =
+                        clients.get(random.nextInt(clients.size()));
+
+                Appointment appointment =
+                        new Appointment(
+                                client,
+                                trainer,
+                                date,
+                                slotStart,
+                                slotEnd,
+                                "CONFIRMED",
+                                false,
+                                "DEV session with " +
+                                        client.getPerson().getFirstName()
+                        );
+
+                appointmentRepository.save(appointment);
+
+                /* ----------------------------------------
+                CREATE TRAINER–CLIENT NOTES (DEV)
+                ----------------------------------------- */
+                trainerClientNotesRepository
+                        .findByTrainerAndClient(trainer, client)
+                        .orElseGet(() ->
+                                trainerClientNotesRepository.save(
+                                        new TrainerClientNotes(
+                                                trainer,
+                                                client,
+                                                "Initial DEV notes for " +
+                                                        client.getPerson().getFirstName()
+                                        )
+                                )
+                        );
+
+                created++;
+
+
+                appointmentRepository.save(appointment);
+                created++;
+
+            }
+        }
+
+        LOGGER.info(
+                "Created {} DEV appointments for test trainer",
+                created
+        );
+    }
+
 }

@@ -2,10 +2,7 @@ package gr.hua.fitTrack.core.service.impl;
 
 import gr.hua.fitTrack.core.model.*;
 import gr.hua.fitTrack.core.port.SmsNotificationPort;
-import gr.hua.fitTrack.core.repository.PersonRepository;
-import gr.hua.fitTrack.core.repository.TrainerOverrideAvailabilityRepository;
-import gr.hua.fitTrack.core.repository.TrainerProfileRepository;
-import gr.hua.fitTrack.core.repository.TrainerWeeklyAvailabilityRepository;
+import gr.hua.fitTrack.core.repository.*;
 import gr.hua.fitTrack.core.service.TrainerService;
 import gr.hua.fitTrack.core.service.mapper.TrainerMapper;
 import gr.hua.fitTrack.core.service.mapper.TrainerScheduleMapper;
@@ -31,6 +28,7 @@ public class TrainerServiceImpl implements TrainerService {
     private final TrainerWeeklyAvailabilityRepository weeklyAvailabilityRepository;
     private final SmsNotificationPort smsNotificationPort;
     private final TrainerOverrideAvailabilityRepository trainerOverrideAvailabilityRepository;
+    private final AppointmentRepository appointmentRepository;
 
 
     public TrainerServiceImpl(
@@ -39,7 +37,8 @@ public class TrainerServiceImpl implements TrainerService {
             TrainerMapper trainerMapper,
             TrainerWeeklyAvailabilityRepository weeklyAvailabilityRepository,
             SmsNotificationPort smsNotificationPort,
-            TrainerOverrideAvailabilityRepository trainerOverrideAvailabilityRepository
+            TrainerOverrideAvailabilityRepository trainerOverrideAvailabilityRepository,
+            AppointmentRepository appointmentRepository
     ) {
         this.trainerProfileRepository = trainerProfileRepository;
         this.personRepository = personRepository;
@@ -47,6 +46,7 @@ public class TrainerServiceImpl implements TrainerService {
         this.weeklyAvailabilityRepository = weeklyAvailabilityRepository;
         this.smsNotificationPort = smsNotificationPort;
         this.trainerOverrideAvailabilityRepository = trainerOverrideAvailabilityRepository;
+        this.appointmentRepository = appointmentRepository;
     }
 
     // --------------------------------------------------
@@ -404,6 +404,34 @@ public class TrainerServiceImpl implements TrainerService {
         }
 
         return result;
+    }
+
+    @Transactional(readOnly = true)
+    public List<TrainerAppointmentView> getTrainerAppointmentsNext7Days(Long personId) {
+
+        TrainerProfile trainer =
+                trainerProfileRepository.findByPersonId(personId)
+                        .orElseThrow();
+
+        LocalDate today = LocalDate.now();
+        LocalDate end   = today.plusDays(6);
+
+        return appointmentRepository
+                .findByTrainerAndDateBetweenOrderByDateAscStartTimeAsc(
+                        trainer,
+                        today,
+                        end
+                )
+                .stream()
+                .map(a -> new TrainerAppointmentView(
+                        a.getDate(),
+                        a.getStartTime(),
+                        a.getEndTime(),
+                        a.getClient().getPerson().getFirstName() + " " +
+                                a.getClient().getPerson().getLastName(),
+                        a.getNotes()
+                ))
+                .toList();
     }
 
 

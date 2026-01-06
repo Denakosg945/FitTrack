@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Fit Track | My Clients</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    body {
+      background-color: #ffffff;
+    }
+
+    h1 {
+      font-family: "Ultimate", sans-serif;
+      color: #533434;
+    }
+
+    .client-card {
+      border: 2px solid #533434;
+      border-radius: 8px;
+      padding: 16px;
+      background-color: #f4f0f0;
+      margin-bottom: 20px;
+    }
+
+    .client-name {
+      font-weight: bold;
+      color: #533434;
+      font-size: 1.2rem;
+    }
+
+    textarea {
+      resize: vertical;
+      border: 2px solid #533434;
+      background-color: #ffffff;
+    }
+
+    .btn-save {
+      background-color: #533434;
+      color: white;
+      border: none;
+      padding: 6px 20px;
+    }
+
+    .btn-save:hover {
+      background-color: #939393;
+    }
+
+    @font-face {
+      font-family: "Ultimate";
+      src: url("/fonts/Ultimate.otf") format("opentype");
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container mt-5">
+
+  <h1 class="mb-4 text-center">My Clients & Notes</h1>
+
+  <div th:if="${#lists.isEmpty(clientNotes)}" class="text-center text-muted">
+    No clients yet.
+  </div>
+
+  <div th:each="note : ${clientNotes}" class="client-card">
+
+    <!-- CLIENT NAME -->
+    <div class="client-name mb-2"
+         th:text="${note.clientFullName}">
+    </div>
+
+    <!-- NOTES FORM -->
+    <form th:action="@{/trainer/clients/notes/{id}(id=${note.id})}"
+          method="post">
+
+            <textarea name="notes"
+                      class="form-control mb-2"
+                      rows="4"
+                      th:text="${note.notes}">
+            </textarea>
+
+      <div class="text-end">
+        <button type="submit" class="btn btn-save">
+          Save Notes
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <div class="text-center mt-4">
+    <a href="/trainer/profile" class="btn btn-secondary">
+      Back to Profile
+    </a>
+  </div>
+
+</div>
+
+</body>
+</html>

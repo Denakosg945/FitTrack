@@ -2,10 +2,7 @@ package gr.hua.fitTrack.web.rest;
 
 import gr.hua.fitTrack.core.model.Weekday;
 import gr.hua.fitTrack.core.service.TrainerService;
-import gr.hua.fitTrack.core.service.model.TrainerOverrideRequest;
-import gr.hua.fitTrack.core.service.model.TrainerView;
-import gr.hua.fitTrack.core.service.model.UpdateTrainerProfileRequest;
-import gr.hua.fitTrack.core.service.model.WeeklyAvailabilityView;
+import gr.hua.fitTrack.core.service.model.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,11 +35,16 @@ public class TrainerProfileController {
         TrainerView trainer =
                 trainerService.getTrainerProfileByPersonId(TEST_TRAINER_PERSON_ID);
 
+        List<TrainerAppointmentView> appointments =
+                trainerService.getTrainerAppointmentsNext7Days(TEST_TRAINER_PERSON_ID);
+
         model.addAttribute("trainer", trainer);
         model.addAttribute(
                 "dailySchedule",
                 trainerService.getTrainerScheduleForNext7Days(TEST_TRAINER_PERSON_ID)
         );
+        model.addAttribute("appointments", appointments);
+
 
         return "trainer/profile";
     }

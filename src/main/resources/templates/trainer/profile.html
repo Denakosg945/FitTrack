@@ -214,6 +214,62 @@
             </div>
         </div>
     </div>
+    <div style="text-align: right; margin-right: 25px; margin-bottom: 30px;">
+
+        <a th:href="@{/trainer/profile/edit/override}"
+           class="btn btn-primary text-light">
+            Override Specific Day
+        </a>
+    </div>
+    <!-- APPOINTMENTS -->
+    <label class="form-label mx-4 mt-4">Upcoming Appointments</label>
+
+    <div class="mx-4 mb-4">
+
+        <div th:if="${#lists.isEmpty(appointments)}"
+             class="value-box text-center">
+            No upcoming appointments
+        </div>
+
+        <div th:each="appt : ${appointments}"
+             class="p-3 mb-2"
+             style="
+            border: 2px solid #533434;
+            background-color: #f4f0f0;
+            border-radius: 6px;
+         ">
+
+            <!-- DATE + TIME -->
+            <div style="color: #533434; font-weight: bold;">
+                <span th:text="${appt.date}"></span>
+                —
+                <span th:text="${appt.startTime}"></span>
+                -
+                <span th:text="${appt.endTime}"></span>
+            </div>
+
+            <!-- CLIENT -->
+            <div class="mt-1">
+                Client:
+                <strong th:text="${appt.clientName}"></strong>
+            </div>
+
+            <!-- NOTES -->
+            <div class="mt-1 text-muted"
+                 th:if="${appt.notes != null}">
+                <em th:text="${appt.notes}"></em>
+            </div>
+
+        </div>
+
+
+    </div>
+    <div style="text-align: right; margin-right: 25px; margin-bottom: 30px;">
+        <a th:href="@{/trainer/clients}"
+            class="btn btn-primary text-light">
+            Clients & Notes
+        </a>
+    </div>
 
 
     <!-- WEEKLY SCHEDULE -->
@@ -238,10 +294,6 @@
         <a th:href="@{/trainer/profile/edit/schedule}"
            class="btn btn-primary text-light">
             Edit Weekly Schedule
-        </a>
-        <a th:href="@{/trainer/profile/edit/override}"
-           class="btn btn-primary text-light">
-            Override Specific Day
         </a>
     </div>
 </div>

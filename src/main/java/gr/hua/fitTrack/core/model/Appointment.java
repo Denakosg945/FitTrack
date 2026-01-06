@@ -2,6 +2,8 @@ package gr.hua.fitTrack.core.model;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 @Entity
 @Table(name = "appointment")
 public class Appointment {
@@ -16,32 +18,28 @@ public class Appointment {
             sequenceName = "appointment_seq",
             allocationSize = 1
     )
-    @Column(name = "id")
     private Long id;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "fk_client", nullable = false)
     private ClientProfile client;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "fk_trainer", nullable = false)
     private TrainerProfile trainer;
 
-    @OneToOne(optional = false)
-    @JoinColumn(
-            name = "fk_trainer_schedule_slot",
-            nullable = false,
-            unique = true
-    )
-    private TrainerScheduleSlot trainerScheduleSlot;
+    @Column(nullable = false)
+    private LocalDate date;
 
-    @Column(name = "status", nullable = false, length = 15)
+    @Column(nullable = false)
+    private LocalTime startTime;
+
+    // 1 hour session (κανόνας)
+    @Column(nullable = false)
+    private LocalTime endTime;
+
+    @Column(nullable = false)
     private String status;
 
-    @Column(name = "is_outdoor", nullable = false)
     private boolean isOutdoor;
-
-    @Column(name = "notes")
     private String notes;
 
     protected Appointment() {}
@@ -49,14 +47,18 @@ public class Appointment {
     public Appointment(
             ClientProfile client,
             TrainerProfile trainer,
-            TrainerScheduleSlot trainerScheduleSlot,
+            LocalDate date,
+            LocalTime startTime,
+            LocalTime endTime,
             String status,
             boolean isOutdoor,
             String notes
     ) {
         this.client = client;
         this.trainer = trainer;
-        this.trainerScheduleSlot = trainerScheduleSlot;
+        this.date = date;
+        this.startTime = startTime;
+        this.endTime = endTime;
         this.status = status;
         this.isOutdoor = isOutdoor;
         this.notes = notes;
@@ -66,27 +68,71 @@ public class Appointment {
         return id;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public ClientProfile getClient() {
         return client;
+    }
+
+    public void setClient(ClientProfile client) {
+        this.client = client;
     }
 
     public TrainerProfile getTrainer() {
         return trainer;
     }
 
-    public TrainerScheduleSlot getTrainerScheduleSlot() {
-        return trainerScheduleSlot;
+    public void setTrainer(TrainerProfile trainer) {
+        this.trainer = trainer;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }
+
+    public LocalTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public LocalTime getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(LocalTime endTime) {
+        this.endTime = endTime;
     }
 
     public String getStatus() {
         return status;
     }
 
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
     public boolean isOutdoor() {
         return isOutdoor;
     }
 
+    public void setOutdoor(boolean outdoor) {
+        isOutdoor = outdoor;
+    }
+
     public String getNotes() {
         return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
     }
 }

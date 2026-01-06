@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/fittrackdb
+    url: jdbc:postgresql://localhost:5432/fittrackdb?currentSchema=public
     username: fittrack_admin
     password: adminStrongPassword
     driver-class-name: org.postgresql.Driver
@@ -8,5 +8,9 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        default_schema: public
     show-sql: true
     open-in-view: false

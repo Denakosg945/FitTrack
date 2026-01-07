@@ -16,8 +16,8 @@ import org.springframework.stereotype.Component;
 public class StartupRunner implements ApplicationListener<ContextRefreshedEvent> {
 
     private final InitializationService initializationService;
-    private WeatherServicePort weatherServicePort;
-    private GeolocationPort geolocationPort;
+    private final WeatherServicePort weatherServicePort;
+    private final GeolocationPort geolocationPort;
 
 
     public StartupRunner(InitializationService initializationService, WeatherServicePort weatherServicePort, GeolocationPort geolocationPort) {

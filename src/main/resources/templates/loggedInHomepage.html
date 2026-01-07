@@ -168,6 +168,76 @@
         .dropdown:hover .dropdown-content {
             display: block;
         }
+
+        .weather-card {
+            position: absolute;
+            bottom: 30px;
+            left: 30px;
+            background: rgba(93, 67, 67, 0.9);
+            padding: 20px;
+            border-radius: 12px;
+            color: white;
+            width: 320px; /* Slightly wider for data density */
+            z-index: 100;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            backdrop-filter: blur(10px);
+        }
+
+        .condition-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .weather-icon-img {
+            width: 35px;
+            height: 35px;
+            object-fit: contain;
+        }
+
+        .location-label {
+            opacity: 0.7;
+            display: block;
+            margin-top: 2px;
+        }
+
+        .weather-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px 15px; /* More vertical gap for the sub-values */
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 15px;
+            margin-top: 15px;
+        }
+
+        .stat-group .label {
+            font-size: 0.6rem;
+            color: #d1d1d1;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 2px;
+        }
+
+        .stat-group .value-row {
+            font-weight: bold;
+            font-size: 1rem;
+            line-height: 1.2;
+        }
+
+        .stat-group .sub-value {
+            font-size: 0.7rem;
+            color: #bbb;
+        }
+
+        .visibility-alert {
+            margin-top: 15px;
+            font-size: 0.75rem;
+            background: rgba(255, 193, 7, 0.2);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            padding: 6px;
+            border-radius: 6px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -187,6 +257,64 @@
     </div>
 </header>
 
+<div class="weather-card" th:object="${data}">
+    <form th:action="@{/loginHomepage}" method="post">
+        <input type="text" name="location" class="location-input"
+               placeholder="Search city..." th:value="${location}">
+    </form>
+
+    <div class="weather-header">
+        <div class="condition-container">
+            <h4 th:text="${condition}">Sunny</h4>
+            <img th:src="@{'/images/' + ${weatherIcon} + '.png'}" alt="Weather Icon" class="weather-icon-img">
+        </div>
+        <small class="location-label" th:text="${location}">Athens, GR</small>
+    </div>
+
+    <div class="weather-grid">
+        <div class="stat-group">
+            <span class="label">Average Temp</span>
+            <div class="value-row" th:text="${#numbers.formatDecimal(data.avgTemp, 1, 1)} + '°C'">24°C</div>
+            <div class="sub-value">
+                High: <span th:text="*{maxTemp}"></span>° | Low: <span th:text="*{minTemp}"></span>°
+            </div>
+        </div>
+
+        <div class="stat-group">
+            <span class="label">Apparent Temp</span>
+            <div class="value-row" th:text="${#numbers.formatDecimal(data.avgApparentTemp, 1, 1)} + '°C'">°C</div>
+            <div class="sub-value">
+                <span th:text="*{minApparentTemp}"></span>° to <span th:text="*{maxApparentTemp}"></span>°
+            </div>
+        </div>
+
+        <div class="stat-group">
+            <span class="label">Wind</span>
+            <div class="value-row" th:text="*{avgWindSpeed} + ' km/h'">12 km/h</div>
+            <div class="sub-value">Sustained: <span th:text="*{maxSustainedWindSpeed}">18</span></div>
+        </div>
+
+        <div class="stat-group">
+            <span class="label">Humidity</span>
+            <div class="value-row" th:text="${#numbers.formatDecimal(data.avgHumidity, 1, 0)} + '%'">45%</div>
+            <div class="sub-value">Max: <span th:text="*{maxHumidity}">60</span>%</div>
+        </div>
+
+        <div class="stat-group">
+            <span class="label">Rain Chance</span>
+            <div class="value-row" th:text="*{precipitationProbability} + '%'">%</div>
+        </div>
+
+        <div class="stat-group">
+            <span class="label">UV Classification</span>
+            <div class="value-row" th:text="*{uvIndexClassification}">Low</div>
+        </div>
+    </div>
+
+    <div th:if="*{!isVisible}" class="visibility-alert">
+        ⚠️ Low Visibility Warning
+    </div>
+</div>
 <footer>
     © 2025 Harokopio University of Athens
 </footer>

@@ -32,13 +32,13 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // TODO remove trainerProfileCreation/**,clientProfileCreation/** when the session persists in cookies
                         // TODO remove deletePerson give the user a temporary cookie when he is doing 2FA authentication
-                        .requestMatchers("/deletePerson/**","/verifyPhone/**","/clientProfileCreation/**","/trainerProfileCreation/**","/register","/trainers","/","/login", "/css/**", "/js/**", "/images/**").permitAll()
+                        .requestMatchers("/loginHomepage","/loginHomepage/**","/deletePerson/**","/verifyPhone/**","/clientProfileCreation/**","/trainerProfileCreation/**","/register","/trainers","/","/login", "/css/**", "/js/**", "/images/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
                         .loginPage("/login")      // <-- YOUR CUSTOM PAGE
                         .loginProcessingUrl("/login") // the POST URL
-                        .defaultSuccessUrl("/", true)
+                        .defaultSuccessUrl("/loginHomepage", false)
                         .permitAll()
                 )
                 .logout(logout -> logout

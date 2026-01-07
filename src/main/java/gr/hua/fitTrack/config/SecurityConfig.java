@@ -54,6 +54,8 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+
+    /* temporarily disabled
     // Temporary in-memory user
     @Bean
     public UserDetailsService users(PasswordEncoder encoder) {
@@ -64,5 +66,5 @@ public class SecurityConfig {
                 .build();
 
         return new InMemoryUserDetailsManager(user);
-    }
+    }*/
 }

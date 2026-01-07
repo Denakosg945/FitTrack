@@ -14,7 +14,8 @@ public record ClientView(
         int weight,
         int height,
         Goals goals,
-        List<ProgressView> progress
+        List<ProgressView> progress,
+        List<AppointmentView> appointments
 ) {
 }
 

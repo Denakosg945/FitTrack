@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Fit Track | Set Goals </title>
+
+  <link rel="icon" type="image/ico" href="/images/favicon.ico">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    .form-container {
+      margin: 40px auto;
+      max-width: 700px;
+      box-shadow: 12px 12px 0px #533434;
+      border: 4px solid #b6b6b6;
+      padding: 30px;
+    }
+
+    .form-label {
+      text-transform: uppercase;
+      font-weight: bold;
+      letter-spacing: 1px;
+      color: darkgrey;
+      font-size: 12px;
+    }
+
+    .btn-primary {
+      background: #533434;
+      border: 0;
+      padding: 0.5em 4em;
+    }
+
+    .btn-primary:hover {
+      background: #939393;
+    }
+  </style>
+</head>
+
+<body>
+<h1 class="text-center mt-4">Set New Goals</h1>
+
+
+<form th:action="@{/client/edit/goals}"
+      th:object="${goalsForm}"
+      method="post">
+
+  <!-- WEIGHT GOAL -->
+  <div class="mb-3">
+    <label class="form-label">Target Weight (kg)</label>
+    <input type="number"
+           step="0.1"
+           class="form-control"
+           th:field="*{weightGoal}">
+  </div>
+
+  <!-- RUNNING GOAL -->
+  <div class="mb-3">
+    <label class="form-label">Running Goal (sec)</label>
+    <input type="number"
+           class="form-control"
+           th:field="*{runningTimeGoal}">
+  </div>
+
+  <!-- BODY FAT -->
+  <div class="mb-3">
+    <label class="form-label">Body Fat Percentage (%)</label>
+    <input type="number"
+           class="form-control"
+           th:field="*{bodyFatPercentageGoal}">
+  </div>
+
+  <div class="text-end">
+    <button type="submit"
+            class="btn btn-primary text-light">
+      Save Goals
+    </button>
+  </div>
+</form>
+
+</body>
+</html>

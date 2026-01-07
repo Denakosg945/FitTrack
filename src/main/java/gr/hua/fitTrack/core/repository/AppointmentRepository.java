@@ -22,4 +22,7 @@ public interface AppointmentRepository
             LocalDate start,
             LocalDate end
     );
+
+    List<Appointment> findByClientIdOrderByDateAscStartTimeAsc(Long clientId);
+
 }

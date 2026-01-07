@@ -1,19 +1,32 @@
 package gr.hua.fitTrack.core.service.mapper;
 
+import gr.hua.fitTrack.core.model.Appointment;
 import gr.hua.fitTrack.core.model.ClientProfile;
+import gr.hua.fitTrack.core.repository.AppointmentRepository;
+import gr.hua.fitTrack.core.service.model.AppointmentView;
 import gr.hua.fitTrack.core.service.model.ClientView;
 import gr.hua.fitTrack.core.service.model.ProgressView;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.List;
 
 @Component
 public class ClientMapper {
 
     private final ProgressMapper progressMapper;
+    private final AppointmentMapper appointmentMapper;
+    private final AppointmentRepository appointmentRepository;
 
-    public ClientMapper(ProgressMapper progressMapper) {
+
+    public ClientMapper(ProgressMapper progressMapper,
+                        AppointmentRepository appointmentRepository,
+                        AppointmentMapper appointmentMapper
+                        ) {
         this.progressMapper = progressMapper;
+        this.appointmentRepository = appointmentRepository;
+        this.appointmentMapper = appointmentMapper;
+
     }
 
     public ClientView converClientToClientView(ClientProfile client) {
@@ -26,6 +39,14 @@ public class ClientMapper {
                         .map(progressMapper::toView)
                         .toList();
 
+        List<Appointment> appointments = appointmentRepository.findByClientIdOrderByDateAscStartTimeAsc(client.getId());
+        List<AppointmentView> appointmentViews =
+                appointments.stream()
+                        .map(appointmentMapper::toView)
+                        .toList();
+
+
+
         return new ClientView(
                 client.getId(),
                 client.getPerson().getFirstName(),
@@ -33,7 +54,8 @@ public class ClientMapper {
                 client.getWeight(),
                 client.getHeight(),
                 client.getGoals(),
-                progressViews
+                progressViews,
+                appointmentViews
         );
     }
 }

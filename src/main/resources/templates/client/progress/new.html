@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Fit Track | Set Progress</title>
+
+  <link rel="icon" type="image/ico" href="/images/favicon.ico">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    .form-container {
+      margin: 40px auto;
+      max-width: 700px;
+      box-shadow: 12px 12px 0px #533434;
+      border: 4px solid #b6b6b6;
+      padding: 30px;
+    }
+
+    .form-label {
+      text-transform: uppercase;
+      font-weight: bold;
+      letter-spacing: 1px;
+      color: darkgrey;
+      font-size: 12px;
+    }
+
+    .btn-primary {
+      background: #533434;
+      border: 0;
+      padding: 0.5em 4em;
+    }
+
+    .btn-primary:hover {
+      background: #939393;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1 class="text-center mt-4">Set New Progress</h1>
+
+<div class="form-container">
+
+  <form th:action="@{/client/progress/new}"
+        th:object="${progressForm}"
+        method="post">
+
+    <!-- WEIGHT -->
+    <div class="mb-3">
+      <label class="form-label">Current Weight (kg)</label>
+      <input type="number"
+             class="form-control"
+             th:field="*{weight}">
+      <div class="text-danger"
+           th:if="${#fields.hasErrors('weight')}"
+           th:errors="*{weight}">
+      </div>
+    </div>
+
+
+    <!-- RUNNING TIME -->
+    <div class="mb-3">
+      <label class="form-label">Current Running Time (sec)</label>
+      <input type="number"
+             class="form-control"
+             th:field="*{runningTimeSeconds}">
+      <div class="text-danger"
+           th:if="${#fields.hasErrors('runningTimeSeconds')}"
+           th:errors="*{runningTimeSeconds}">
+      </div>
+    </div>
+
+
+    <!-- BODY FAT -->
+
+    <div class="mb-3">
+      <label class="form-label">Current Body Fat Percentage (%)</label>
+      <input type="number"
+             class="form-control"
+             th:field="*{bodyFatPercentage}">
+      <div class="text-danger"
+           th:if="${#fields.hasErrors('bodyFatPercentage')}"
+           th:errors="*{bodyFatPercentage}">
+      </div>
+    </div>
+
+    <!-- WATER -->
+
+    <div class="mb-3">
+      <label class="form-label">Current Water Intake (l)</label>
+      <input type="number"
+             class="form-control"
+             th:field="*{waterIntake}">
+      <div class="text-danger"
+           th:if="${#fields.hasErrors('waterIntake')}"
+           th:errors="*{waterIntake}">
+      </div>
+    </div>
+
+
+
+    <div class="text-end">
+      <button type="submit"
+              class="btn btn-primary text-light">
+        Save Progress
+      </button>
+    </div>
+
+  </form>
+
+</div>
+
+</body>
+</html>

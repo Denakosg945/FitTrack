@@ -134,6 +134,49 @@
         <div class="value-box" th:text="${client.weight + ' kg'}"></div>
     </div>
 
+    <!-- APPOINTMENTS -->
+    <div class="mx-4 mb-3">
+    <label class="form-label">APPOINTMENTS</label>
+    <div th:each="appt : ${client.appointments}"
+         class="p-3 mb-3"
+         style="
+        border: 2px solid #533434;
+        background-color: #f4f0f0;
+        border-radius: 6px;
+     ">
+
+        <!-- DATE + TIME -->
+        <div style="color: #533434; font-weight: bold;">
+            <span th:text="${appt.date}"></span>
+            —
+            <span th:text="${appt.startTime}"></span>
+            -
+            <span th:text="${appt.endTime}"></span>
+        </div>
+
+        <!-- TRAINER -->
+        <div class="mt-1">
+            Trainer:
+            <strong th:text="${appt.trainerName}"></strong>
+        </div>
+
+        <!-- OUTDOOR / INDOOR -->
+        <div class="mt-1 text-muted">
+            <strong th:text="${appt.outdoor ? 'Outdoor' : 'Indoor'}"></strong>
+        </div>
+
+        <!-- STATUS -->
+        <div class="mt-1">
+            Status:
+            <strong th:text="${appt.status}"></strong>
+        </div>
+
+    </div>
+
+    </div>
+
+
+
     <!-- GOALS -->
     <label class="form-label mx-4 mt-4">Goals</label>
 
@@ -142,6 +185,7 @@
         <div class="value-box">
             <div>Target Weight: <strong th:text="${client.goals.weightGoal}"></strong> kg</div>
             <div>Running Goal: <strong th:text="${client.goals.runningTimeGoal}"></strong> sec</div>
+            <div>Body Fat Percentage Goal: <strong th:text="${client.goals.bodyFatPercentageGoal}"></strong> %</div>
         </div>
     </div>
 
@@ -153,7 +197,7 @@
     </div>
 
     <div style="text-align: right; margin-right: 25px; margin-bottom: 30px;">
-        <a th:href="@{/client/goals/edit}"
+        <a th:href="@{/client/edit/goals}"
            class="btn btn-primary text-light">
             Edit Goals
         </a>
@@ -177,7 +221,12 @@
             Weight:
             <strong th:text="${p.weight}"></strong> kg,
             Running:
-            <strong th:text="${p.runningTimeSeconds}"></strong> sec
+            <strong th:text="${p.runningTimeSeconds}"></strong> sec,
+            Body Fat Percentage:
+            <strong th:text="${p.bodyFatPercentage}"></strong> %,
+            Water Intake
+            <strong th:text="${p.waterIntake}"></strong> L
+
         </div>
     </div>
 

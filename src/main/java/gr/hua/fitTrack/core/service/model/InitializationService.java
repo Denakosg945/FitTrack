@@ -220,6 +220,76 @@ public class InitializationService {
             LOGGER.info("Fixed TEST CLIENT created with goals & progress.");
         }
 
+        /* -------------------------------------------------
+   FIXED TEST CLIENT APPOINTMENTS (DEV)
+------------------------------------------------- */
+
+        Optional<Person> testClientPersonOpt =
+                personService.getByEmail("test.client@fittrack.com");
+
+        Optional<Person> testTrainerPersonOpt =
+                personService.getByEmail("test.trainer@fittrack.com");
+
+        if (testClientPersonOpt.isPresent() && testTrainerPersonOpt.isPresent()) {
+
+            ClientProfile testClient =
+                    clientProfileRepository
+                            .findByPersonId(
+                                    testClientPersonOpt.get().getId()
+                            )
+                            .orElseThrow();
+
+            TrainerProfile testTrainer =
+                    trainerProfileRepository
+                            .findByPersonId(
+                                    testTrainerPersonOpt.get().getId()
+                            )
+                            .orElseThrow();
+
+            List<Appointment> testAppointments = List.of(
+
+                    new Appointment(
+                            testClient,
+                            testTrainer,
+                            LocalDate.now().plusDays(1),
+                            LocalTime.of(10, 0),
+                            LocalTime.of(11, 0),
+                            "CONFIRMED",
+                            false,
+                            "Upper body training"
+                    ),
+
+                    new Appointment(
+                            testClient,
+                            testTrainer,
+                            LocalDate.now().plusDays(3),
+                            LocalTime.of(18, 0),
+                            LocalTime.of(19, 0),
+                            "CONFIRMED",
+                            false,
+                            "Cardio & endurance"
+                    ),
+
+                    new Appointment(
+                            testClient,
+                            testTrainer,
+                            LocalDate.now().plusDays(6),
+                            LocalTime.of(12, 0),
+                            LocalTime.of(13, 0),
+                            "PENDING",
+                            false,
+                            "Leg day session"
+                    )
+            );
+
+            appointmentRepository.saveAll(testAppointments);
+
+            LOGGER.info(
+                    "Fixed DEV appointments created for test client"
+            );
+        }
+
+
 
         /* -------------------------------------------------
            RANDOM DATA POOLS

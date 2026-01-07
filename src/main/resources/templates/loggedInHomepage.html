@@ -164,6 +164,9 @@
             background-color: #4a3535;
         }
 
+        .dropdown-item:hover {
+            background-color: #4a3535;
+        }
 
         .dropdown:hover .dropdown-content {
             display: block;
@@ -251,8 +254,11 @@
     <div class="header-right dropdown">
         MENU
         <div class="dropdown-content">
-            <a href="#">Profile</a>
-            <a href="#">Log-out</a>
+            <button type="submit" class="dropdown-item">Profile</button>
+            <!-- LOGOUT (POST) -->
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="dropdown-item">Log-out</button>
+            </form>
         </div>
     </div>
 </header>

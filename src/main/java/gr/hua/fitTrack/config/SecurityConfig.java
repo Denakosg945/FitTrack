@@ -38,12 +38,16 @@ public class SecurityConfig {
                 .formLogin(form -> form
                         .loginPage("/login")      // <-- YOUR CUSTOM PAGE
                         .loginProcessingUrl("/login") // the POST URL
-                        .defaultSuccessUrl("/loginHomepage", false)
+                        .defaultSuccessUrl("/loginHomepage", true)
+                        .failureUrl("/login?error")
                         .permitAll()
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/login?logout")
+                        .deleteCookies("JSESSIONID")
+                        .invalidateHttpSession(true)
+                        .permitAll()
                 );
 
         return http.build();

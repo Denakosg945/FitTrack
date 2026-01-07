@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fit Track | Client Profile</title>
+
+    <link rel="icon" type="image/ico" href="/images/favicon.ico">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        header {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 140px;
+        }
+        .header-left {
+            position: absolute;
+            left: 20px;
+            top: 10px;
+        }
+        .header-left img {
+            width: 130px;
+        }
+        .header-center {
+            text-align: center;
+            font-size: xxx-large;
+            font-family: "Ultimate", sans-serif;
+        }
+        .header-right {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        .header-right a {
+            background-color: #634444;
+            color: #ffffff;
+            padding: 10px 22px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 1.3rem;
+            font-family: "Ultimate";
+        }
+
+        .form-container {
+            margin: 0 auto;
+            max-width: 900px;
+            box-shadow: 12px 12px 0px #533434;
+            border: 4px solid #b6b6b6;
+            padding-bottom: 30px;
+        }
+
+        .form-label {
+            text-transform: uppercase;
+            font-weight: bold;
+            letter-spacing: 1px;
+            color: darkgrey;
+            font-size: 12px;
+        }
+
+        .value-box {
+            border: 2px solid #533434;
+            padding: 10px;
+            background-color: #f4f0f0;
+            font-size: 1.1rem;
+        }
+
+        @font-face {
+            font-family: "Ultimate";
+            src: url("/fonts/Ultimate.otf") format("opentype");
+        }
+
+        .btn-primary {
+            background: #533434;
+            border: 0;
+            padding: 0.5em 2.5em;
+        }
+        .btn-primary:hover {
+            background: #939393;
+        }
+
+        footer {
+            position: fixed;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+        }
+
+        .subtitle {
+            font-size: xx-large;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div class="header-left">
+        <a href="/"><img src="/images/logo.png" alt="Logo"></a>
+    </div>
+
+    <h1 class="header-center">
+        Fit Track
+        <small class="subtitle">/ Client Profile</small>
+    </h1>
+
+    <div class="header-right">
+        <a href="javascript:history.back()">Go Back</a>
+    </div>
+</header>
+
+<h1 class="text-center mt-4">Client Profile</h1>
+
+<div class="form-container mt-4">
+
+    <!-- BASIC INFO -->
+    <div class="mb-3 mx-4">
+        <label class="form-label">Name</label>
+        <div class="value-box"
+             th:text="${client.firstName + ' ' + client.lastName}">
+        </div>
+    </div>
+
+    <div class="mb-3 mx-4">
+        <label class="form-label">Height</label>
+        <div class="value-box" th:text="${client.height + ' cm'}"></div>
+    </div>
+
+    <div class="mb-3 mx-4">
+        <label class="form-label">Weight</label>
+        <div class="value-box" th:text="${client.weight + ' kg'}"></div>
+    </div>
+
+    <!-- GOALS -->
+    <label class="form-label mx-4 mt-4">Goals</label>
+
+    <div class="mx-4 mb-3"
+         th:if="${client.goals != null}">
+        <div class="value-box">
+            <div>Target Weight: <strong th:text="${client.goals.weightGoal}"></strong> kg</div>
+            <div>Running Goal: <strong th:text="${client.goals.runningTimeGoal}"></strong> sec</div>
+        </div>
+    </div>
+
+    <div class="mx-4 mb-3"
+         th:if="${client.goals == null}">
+        <div class="value-box text-muted">
+            No goals set yet.
+        </div>
+    </div>
+
+    <div style="text-align: right; margin-right: 25px; margin-bottom: 30px;">
+        <a th:href="@{/client/goals/edit}"
+           class="btn btn-primary text-light">
+            Edit Goals
+        </a>
+    </div>
+
+    <!-- PROGRESS -->
+    <label class="form-label mx-4 mt-4">Progress History</label>
+
+    <div class="mx-4 mb-3"
+         th:if="${client.progress.isEmpty()}">
+        <div class="value-box text-muted text-center">
+            No progress recorded yet.
+        </div>
+    </div>
+
+    <div class="mx-4 mb-3"
+         th:each="p : ${client.progress}">
+        <div class="value-box mb-2">
+            <strong th:text="${#temporals.format(p.date, 'dd/MM/yyyy')}"></strong>
+            —
+            Weight:
+            <strong th:text="${p.weight}"></strong> kg,
+            Running:
+            <strong th:text="${p.runningTimeSeconds}"></strong> sec
+        </div>
+    </div>
+
+    <div style="text-align: right; margin-right: 25px; margin-bottom: 30px;">
+        <a th:href="@{/client/progress/new}"
+           class="btn btn-primary text-light">
+            Add Progress
+        </a>
+    </div>
+
+</div>
+
+<footer>
+    © 2025 Harokopio University of Athens
+</footer>
+
+</body>
+</html>

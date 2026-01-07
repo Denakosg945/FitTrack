@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
@@ -133,6 +134,92 @@ public class InitializationService {
                 LOGGER.info("Fixed TEST TRAINER created.");
             }
         }
+
+
+        /* -------------------------------------------------
+   FIXED TEST CLIENT
+------------------------------------------------- */
+
+        Optional<Person> existingTestClient =
+                personService.getByEmail("test.client@fittrack.com");
+
+        if (existingTestClient.isEmpty()) {
+
+            CreatePersonResult testClient =
+                    personService.createPerson(
+                            new CreatePersonRequest(
+                                    "Test",
+                                    "Client",
+                                    28,
+                                    GenderType.FEMALE,
+                                    "test.client@fittrack.com",
+                                    "+306911111111",
+                                    "test1234",
+                                    PersonType.CLIENT
+                            )
+                    );
+
+            if (!testClient.created()) {
+                throw new IllegalStateException("Test client person not created");
+            }
+
+            // 1️⃣ CREATE ClientProfile
+            clientService.createClientProfile(
+                    new CreateClientRequest(
+                            testClient.personView().id(),
+                            65,
+                            168,
+                            null,
+                            null,
+                            null
+                    )
+            );
+
+            // 2️⃣ LOAD ClientProfile (NOW it exists)
+            ClientProfile clientProfile =
+                    clientProfileRepository
+                            .findByPersonId(testClient.personView().id())
+                            .orElseThrow(() ->
+                                    new IllegalStateException("ClientProfile not created")
+                            );
+
+            // 3️⃣ CREATE Goals
+            Goals goals = new Goals(
+                    60f,
+                    18,
+                    25,
+                    clientProfile
+            );
+            clientProfile.setGoals(goals);
+
+            // 4️⃣ CREATE Progress
+            List<Progress> progressList = List.of(
+                    new Progress(
+                            clientProfile,
+                            68f,
+                            Instant.now().minusSeconds(10 * 24 * 3600),
+                            32 * 60,
+                            22,
+                            2.0f
+                    ),
+                    new Progress(
+                            clientProfile,
+                            66f,
+                            Instant.now().minusSeconds(5 * 24 * 3600),
+                            30 * 60,
+                            21,
+                            2.2f
+                    )
+            );
+
+            clientProfile.setProgress(progressList);
+
+            // 5️⃣ SAVE
+            clientProfileRepository.save(clientProfile);
+
+            LOGGER.info("Fixed TEST CLIENT created with goals & progress.");
+        }
+
 
         /* -------------------------------------------------
            RANDOM DATA POOLS

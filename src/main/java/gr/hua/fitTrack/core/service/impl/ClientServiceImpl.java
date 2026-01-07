@@ -97,5 +97,21 @@ public class ClientServiceImpl implements ClientService {
 
         return CreateClientResult.success(clientView);
     }
+    @Override
+    @Transactional(readOnly = true)
+    public ClientView getClientProfileByPersonId(Long personId) {
+
+        ClientProfile client =
+                clientProfileRepository.findByPersonIdWithGoalsAndProgress(personId)
+                        .orElseThrow(() ->
+                                new IllegalArgumentException(
+                                        "Client not found for personId=" + personId
+                                )
+                        );
+
+        return clientMapper.converClientToClientView(client);
+    }
+
+
 }
 

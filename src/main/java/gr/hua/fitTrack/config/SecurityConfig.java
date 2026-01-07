@@ -1,5 +1,7 @@
 package gr.hua.fitTrack.config;
 
+import gr.hua.fitTrack.core.repository.PersonRepository;
+import gr.hua.fitTrack.core.security.filters.CookieFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -13,6 +15,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.authentication.AuthenticationFilter;
+import org.springframework.web.client.RestTemplate;
 
 @Configuration
 @EnableWebSecurity
@@ -20,7 +24,11 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 public class SecurityConfig {
 
+    private final PersonRepository personRepository;
 
+    public SecurityConfig(PersonRepository personRepository) {
+        this.personRepository = personRepository;
+    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -29,12 +37,20 @@ public class SecurityConfig {
 
 
         http
+                .addFilterBefore(new CookieFilter(personRepository), AuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
-                        // TODO remove trainerProfileCreation/**,clientProfileCreation/** when the session persists in cookies
-                        // TODO remove deletePerson give the user a temporary cookie when he is doing 2FA authentication
-                        .requestMatchers("/loginHomepage","/loginHomepage/**","/deletePerson/**","/verifyPhone/**","/clientProfileCreation/**","/trainerProfileCreation/**","/register","/trainers","/","/login", "/css/**", "/js/**", "/images/**").permitAll()
-                        .anyRequest().authenticated()
+                        .requestMatchers("/verifyPhone/**", "/deletePerson/**","/register/**","/login/**",
+                                "/clientProfileCreation/**", "/trainerProfileCreation/**","/register","/trainers","/","/login", "/css/**", "/js/**", "/images/**").permitAll()
+                        .requestMatchers("/trainerProfileCreation/**").hasRole("TRAINER")
+                        .requestMatchers("/clientProfileCreation/**").hasRole("CLIENT")
+                        .requestMatchers(
+                                "/loginHomepage",
+                                "/loginHomepage/**"
+                        ).authenticated()
+
+
                 )
+
                 .formLogin(form -> form
                         .loginPage("/login")      // <-- YOUR CUSTOM PAGE
                         .loginProcessingUrl("/login") // the POST URL
@@ -52,6 +68,8 @@ public class SecurityConfig {
 
         return http.build();
     }
+
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {

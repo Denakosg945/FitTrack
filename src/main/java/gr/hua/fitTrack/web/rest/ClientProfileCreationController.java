@@ -5,6 +5,8 @@ import gr.hua.fitTrack.core.service.PersonService;
 import gr.hua.fitTrack.core.service.model.CreateClientRequest;
 import gr.hua.fitTrack.core.service.model.CreateClientResult;
 import gr.hua.fitTrack.core.service.model.CreateTrainerRequest;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,13 +44,25 @@ public class ClientProfileCreationController {
     public String handleClientForm(
             @ModelAttribute("createClientRequest") final CreateClientRequest createClientRequest,
             @RequestParam("personId") Long personId,
-            final Model model){
+            final Model model, HttpServletResponse response
+            ){
 
         final CreateClientResult createClientResult = clientService.createClientProfile(createClientRequest);
         if(createClientResult.created()){
+            //Delete the cookie - no longer needed
+            Cookie cookie = new Cookie("token", null);
+            cookie.setPath("/");
+            cookie.setMaxAge(0);
+            response.addCookie(cookie);
             return "redirect:/login";
         }
         personService.deleteById(personId);
+
+        //Delete the cookie - no longer needed
+        Cookie cookie = new Cookie("token", null);
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
 
         model.addAttribute("createClientRequest", createClientRequest);
         model.addAttribute("errorMessage", createClientResult.reason());

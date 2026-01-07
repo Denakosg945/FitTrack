@@ -12,6 +12,7 @@ import gr.hua.fitTrack.core.service.model.CreatePersonRequest;
 import gr.hua.fitTrack.core.service.model.CreatePersonResult;
 import gr.hua.fitTrack.core.service.model.PendingRegistration;
 import gr.hua.fitTrack.core.service.model.PersonView;
+import jakarta.servlet.http.Cookie;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -141,6 +142,7 @@ public class PersonServiceImpl implements PersonService {
         pendingRegistrations.put(createPersonRequest.phoneNumber(),new PendingRegistration(
                 createPersonRequest, code, Instant.now().plusSeconds(300))
         );
+
     }
 
 

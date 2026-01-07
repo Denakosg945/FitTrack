@@ -6,6 +6,8 @@ import gr.hua.fitTrack.core.repository.PersonRepository;
 import gr.hua.fitTrack.core.service.PersonService;
 import gr.hua.fitTrack.core.service.model.CreatePersonRequest;
 import gr.hua.fitTrack.core.service.model.CreatePersonResult;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -55,7 +57,8 @@ public class RegistrationController {
     @PostMapping("/register")
     public String handleRegistrationFormSubmission(
             @ModelAttribute("createPersonRequest") final CreatePersonRequest createPersonRequest,
-            final Model model
+            final Model model,
+            HttpServletResponse response
         ){
 
         //TODO: Validation, UI errors
@@ -63,7 +66,15 @@ public class RegistrationController {
 
 
         if (createPersonResult.created()){
+            //Generate cookie to authorize verifyPhone
+            Cookie phoneCookie = new Cookie("token",createPersonResult.personView().phoneNumber());
+            phoneCookie.setPath("/");
+            phoneCookie.setHttpOnly(true);
+            phoneCookie.setMaxAge(300); // Cookie expiration in 5 minutes
+            response.addCookie(phoneCookie);
+
             personService.generate2FACode(createPersonRequest);
+
             String phoneParameter = URLEncoder.encode(createPersonResult.personView().phoneNumber(), StandardCharsets.UTF_8);
             return "redirect:/verifyPhone?phone=" + phoneParameter + "&userId=" + createPersonResult.personView().id();
         }

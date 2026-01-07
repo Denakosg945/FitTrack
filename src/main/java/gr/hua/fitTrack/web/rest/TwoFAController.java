@@ -8,6 +8,8 @@ import gr.hua.fitTrack.core.service.model.Create2FARequest;
 import gr.hua.fitTrack.core.service.model.CreatePersonRequest;
 import gr.hua.fitTrack.core.service.model.CreatePersonResult;
 import gr.hua.fitTrack.core.service.model.PendingRegistration;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -33,7 +35,7 @@ public class TwoFAController {
         if (pending == null) {
             return "redirect:/register?error=NoPending"; // redirect back to registration
         }
-        
+
         Create2FARequest form = new Create2FARequest();
         form.setPhone(phone);
         model.addAttribute("create2FARequest", form);
@@ -50,6 +52,8 @@ public class TwoFAController {
                 personRepository.deleteByPhoneNumber(form.getPhone());
                 throw new PersonException("Could not verify 2FA code");
             }
+
+
             if(result.personView().type().equals(PersonType.CLIENT) ){
                 return "redirect:/clientProfileCreation?personId=" + result.personView().id();
             }
@@ -64,8 +68,14 @@ public class TwoFAController {
 
     @PostMapping("/deletePerson/{phone}")
     @Transactional
-    public String deletePending(@PathVariable String phone) {
+    public String deletePending(@PathVariable String phone,HttpServletResponse response) {
         personRepository.deleteByPhoneNumber(phone);
+        //Delete the cookie - no longer needed
+        Cookie cookie = new Cookie("token", null);
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+
         return "redirect:/register";
     }
 }

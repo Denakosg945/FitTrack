@@ -1,10 +1,7 @@
 package gr.hua.fitTrack.core.service.model;
 
 import gr.hua.fitTrack.core.model.*;
-import gr.hua.fitTrack.core.repository.AppointmentRepository;
-import gr.hua.fitTrack.core.repository.ClientProfileRepository;
-import gr.hua.fitTrack.core.repository.TrainerClientNotesRepository;
-import gr.hua.fitTrack.core.repository.TrainerProfileRepository;
+import gr.hua.fitTrack.core.repository.*;
 import gr.hua.fitTrack.core.service.ClientService;
 import gr.hua.fitTrack.core.service.PersonService;
 import gr.hua.fitTrack.core.service.TrainerService;
@@ -34,6 +31,7 @@ public class InitializationService {
     private final ClientProfileRepository clientProfileRepository;
     private final AppointmentRepository appointmentRepository;
     private final TrainerClientNotesRepository trainerClientNotesRepository;
+    private final APIClientRepository apiClientRepository;
 
     private Optional<LocalTime[]> resolveWeeklyWorkingHours(
             TrainerProfile trainer,
@@ -60,7 +58,7 @@ public class InitializationService {
                                  TrainerProfileRepository trainerProfileRepository,
                                  ClientProfileRepository clientProfileRepository,
                                  AppointmentRepository appointmentRepository,
-                                 TrainerClientNotesRepository trainerClientNotesRepository) {
+                                 TrainerClientNotesRepository trainerClientNotesRepository, APIClientRepository apiClientRepository) {
         this.personService = personService;
         this.trainerService = trainerService;
         this.clientService = clientService;
@@ -68,6 +66,7 @@ public class InitializationService {
         this.clientProfileRepository = clientProfileRepository;
         this.appointmentRepository = appointmentRepository;
         this.trainerClientNotesRepository = trainerClientNotesRepository;
+        this.apiClientRepository = apiClientRepository;
     }
 
     public void populateDatabase() {
@@ -322,6 +321,13 @@ public class InitializationService {
                 "CrossFit",
                 "Cardio Training"
         );
+
+        List<APIClient> apiClientList = List.of(
+                new APIClient(null, "secret", "INTEGRATION_READ,INTEGRATION_WRITE", "client00"),
+                new APIClient(null, "secret", "INTEGRATION_READ", "client01")
+        );
+
+        this.apiClientRepository.saveAll(apiClientList);
 
         Random random = new Random();
 

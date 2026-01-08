@@ -14,3 +14,9 @@ spring:
         default_schema: public
     show-sql: true
     open-in-view: false
+
+springdoc:
+  api-docs:
+    path:  /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html

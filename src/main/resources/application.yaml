@@ -19,3 +19,17 @@ spring:
 sms:
   service:
     url: http://localhost:8081
+
+
+app:
+  jwt:
+    issuer: "fit-track-api"
+    audience: "external-systems"
+    secret: "${JWT_SECRET:cY90vGHmXC81ZEVYQxRdCSi0uWyz4P25y1kPNa2THUo=}" #Generated using openssl rand -base64 32
+    ttl-minutes: 30
+
+springdoc:
+  api-docs:
+    path:  /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html

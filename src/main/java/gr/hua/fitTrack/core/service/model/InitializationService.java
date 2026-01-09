@@ -183,4 +183,92 @@ public class InitializationService {
                 .findFirst()
                 .map(w -> new LocalTime[]{w.getStartTime(), w.getEndTime()});
     }
+
+    // ================= RANDOM TRAINERS =================
+    private List<TrainerProfile> createRandomTrainers(int count) {
+        List<TrainerProfile> list = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            Person p = new Person();
+            p.setFirstName("Trainer" + i);
+            p.setLastName("Random");
+            p.setAge(25 + i % 20);
+            p.setGender(GenderType.MALE);
+            p.setPhoneNumber("+30691" + String.format("%06d", i));
+            p.setEmailAddress("trainer_random_" + i + "@fittrack.com");
+            p.setPasswordHash(passwordEncoder.encode("pass" + i));
+            p.setType(PersonType.TRAINER);
+            personRepository.save(p);
+
+            TrainerProfile tp = new TrainerProfile();
+            tp.setPerson(p);
+            tp.setLocation("Athens");
+            tp.setSpecialization("Fitness");
+            trainerProfileRepository.save(tp);
+
+            list.add(tp);
+        }
+        return list;
+    }
+
+    // ================= RANDOM CLIENTS =================
+    private List<ClientProfile> createRandomClients(int count) {
+        List<ClientProfile> list = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            Person p = new Person();
+            p.setFirstName("Client" + i);
+            p.setLastName("Random");
+            p.setAge(18 + i % 30);
+            p.setGender(GenderType.FEMALE);
+            p.setEmailAddress("client_random_" + i + "@fittrack.com");
+            p.setPhoneNumber("+30692" + String.format("%06d", i));
+            p.setPasswordHash(passwordEncoder.encode("pass" + i));
+            p.setType(PersonType.CLIENT);
+            personRepository.save(p);
+
+            ClientProfile cp = new ClientProfile();
+            cp.setPerson(p);
+            cp.setHeight(160 + i % 20);
+            cp.setWeight(55 + i % 30);
+            clientProfileRepository.save(cp);
+
+            list.add(cp);
+        }
+        return list;
+    }
+
+    // ================= DEV APPOINTMENTS =================
+    private void createDevAppointmentsForNext7Days(
+            TrainerProfile trainer,
+            List<ClientProfile> clients
+    ) {
+        LocalDate today = LocalDate.now();
+        Random r = new Random();
+
+        for (int d = 0; d < 7; d++) {
+            LocalDate date = today.plusDays(d);
+
+            Optional<LocalTime[]> hours = resolveWeeklyWorkingHours(trainer, date);
+            if (hours.isEmpty()) continue;
+
+            LocalTime start = hours.get()[0];
+
+            ClientProfile client = clients.get(r.nextInt(clients.size()));
+
+            appointmentRepository.save(
+                    new Appointment(
+                            client,
+                            trainer,
+                            date,
+                            start,
+                            start.plusHours(1),
+                            "CONFIRMED",
+                            false,
+                            "DEV session"
+                    )
+            );
+        }
+    }
+
+
+
 }

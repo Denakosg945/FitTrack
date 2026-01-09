@@ -3,6 +3,7 @@ package gr.hua.fitTrack.config;
 import gr.hua.fitTrack.core.repository.PersonRepository;
 import gr.hua.fitTrack.core.security.filters.CookieFilter;
 import gr.hua.fitTrack.core.security.filters.JwtAuthenticationFilter;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -96,7 +97,9 @@ public class SecurityConfig {
                         .requestMatchers("/clientProfileCreation/**").hasRole("CLIENT")
                         .requestMatchers(
                                 "/loginHomepage",
-                                "/loginHomepage/**"
+                                "/loginHomepage/**",
+                                "/trainer/profile/**",
+                                "/client/profile/**"
                         ).authenticated()
 
 
@@ -105,14 +108,20 @@ public class SecurityConfig {
                 .formLogin(form -> form
                         .loginPage("/login")      // <-- YOUR CUSTOM PAGE
                         .loginProcessingUrl("/login") // the POST URL
-                        .defaultSuccessUrl("/loginHomepage", true)
+                        .successHandler((request, response, authentication) -> {
+                            Cookie mailCookie = new Cookie("mail", request.getParameter("username"));
+                            mailCookie.setPath("/");
+                            response.addCookie(mailCookie);
+
+                            response.sendRedirect("/loginHomepage");
+                        })
                         .failureUrl("/login?error")
                         .permitAll()
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/login?logout")
-                        .deleteCookies("JSESSIONID")
+                        .deleteCookies("JSESSIONID","mail")
                         .invalidateHttpSession(true)
                         .permitAll()
                 )

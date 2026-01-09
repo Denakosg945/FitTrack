@@ -254,7 +254,10 @@
     <div class="header-right dropdown">
         MENU
         <div class="dropdown-content">
-            <button type="submit" class="dropdown-item">Profile</button>
+            <!-- PROFILE (POST) -->
+            <form th:action="@{/profile}" method="post">
+                <button type="submit" class="dropdown-item">Profile</button>
+            </form>
             <!-- LOGOUT (POST) -->
             <form th:action="@{/logout}" method="post">
                 <button type="submit" class="dropdown-item">Log-out</button>

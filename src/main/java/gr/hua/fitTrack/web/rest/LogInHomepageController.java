@@ -35,6 +35,8 @@ public class LogInHomepageController {
                 weatherService.getDailyWeatherPrediction(geolocationPort.getCoordinates(location))
         );
 
+
+
         model.addAttribute("data",data);
         model.addAttribute("location",location);
         String condition = "Sunny";

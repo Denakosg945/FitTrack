@@ -2,6 +2,8 @@ package gr.hua.fitTrack.core.service.model;
 
 import gr.hua.fitTrack.core.model.*;
 import gr.hua.fitTrack.core.repository.*;
+import gr.hua.fitTrack.core.security.APIClientDetails;
+import gr.hua.fitTrack.core.security.APIClientDetailsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
@@ -28,6 +30,7 @@ public class InitializationService {
     private final AppointmentRepository appointmentRepository;
     private final TrainerClientNotesRepository trainerClientNotesRepository;
     private final TrainerWeeklyAvailabilityRepository weeklyAvailabilityRepository;
+    private final APIClientRepository apiClientRepository;
 
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
@@ -37,7 +40,8 @@ public class InitializationService {
             ClientProfileRepository clientProfileRepository,
             AppointmentRepository appointmentRepository,
             TrainerClientNotesRepository trainerClientNotesRepository,
-            TrainerWeeklyAvailabilityRepository weeklyAvailabilityRepository
+            TrainerWeeklyAvailabilityRepository weeklyAvailabilityRepository,
+            APIClientRepository apiClientRepository
     ) {
         this.personRepository = personRepository;
         this.trainerProfileRepository = trainerProfileRepository;
@@ -45,6 +49,7 @@ public class InitializationService {
         this.appointmentRepository = appointmentRepository;
         this.trainerClientNotesRepository = trainerClientNotesRepository;
         this.weeklyAvailabilityRepository = weeklyAvailabilityRepository;
+        this.apiClientRepository = apiClientRepository;
     }
 
     public void populateDatabase() {
@@ -59,6 +64,7 @@ public class InitializationService {
         TrainerProfile testTrainer = createFixedTestTrainer();
         ClientProfile testClient = createFixedTestClient();
         createFixedTestAppointments(testClient, testTrainer);
+        createApiDummyData();
 
         List<TrainerProfile> trainers = createRandomTrainers(100);
         List<ClientProfile> clients = createRandomClients(100);
@@ -113,6 +119,29 @@ public class InitializationService {
         tp.setWeeklyAvailability(av);
 
         return tp;
+    }
+
+    // ================= ADDED DUMMY DATA FOR API CLIENTS ==============
+    private void createApiDummyData(){
+        final List<APIClient> clients = List.of(
+                new APIClient(
+                        null,
+                        "bigSecret",
+                        "INTEGRATION_READ,INTEGRATION_WRITE",
+                        "client00"),
+                new APIClient(
+                        null,
+                        "bigSecret",
+                        "INTEGRATION_READ",
+                        "client01"),
+                new APIClient(
+                        null,
+                        "bigSecret",
+                        "INTEGRATION_WRITE",
+                        "client02")
+        );
+
+        apiClientRepository.saveAll(clients);
     }
 
     // ================= FIXED CLIENT =================

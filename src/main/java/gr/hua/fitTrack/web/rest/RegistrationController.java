@@ -9,6 +9,7 @@ import gr.hua.fitTrack.core.service.model.CreatePersonResult;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -40,9 +41,11 @@ public class RegistrationController {
 
 
     @GetMapping("/register")
-    public String showRegistrationForm(final Model model) {
+    public String showRegistrationForm(final Model model, Authentication authentication) {
+        //if user is authenticated redirect to homepage after login
+        if (authentication != null && authentication.isAuthenticated()) return "redirect:/loginHomepage";
 
-        //TODO if user is authenticated, redirect to
+
         //Initial data for the form.
         final CreatePersonRequest createPersonRequest = new CreatePersonRequest("","",-1, GenderType.MALE,"","","", PersonType.CLIENT);
         model.addAttribute("createPersonRequest",createPersonRequest);

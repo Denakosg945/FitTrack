@@ -30,6 +30,7 @@ public class TrainerProfileController {
     @GetMapping("/profile")
     public String trainerProfile(Model model) {
 
+
         Long TEST_TRAINER_PERSON_ID = 1L;
 
         TrainerView trainer =

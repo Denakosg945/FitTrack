@@ -4,6 +4,7 @@ import gr.hua.fitTrack.core.exception.MaxActiveAppointmentsExceededException;
 import gr.hua.fitTrack.core.model.Appointment;
 import gr.hua.fitTrack.core.model.ClientProfile;
 import gr.hua.fitTrack.core.model.TrainerProfile;
+import gr.hua.fitTrack.core.port.SmsNotificationPort;
 import gr.hua.fitTrack.core.repository.AppointmentRepository;
 import gr.hua.fitTrack.core.repository.ClientProfileRepository;
 import gr.hua.fitTrack.core.repository.TrainerProfileRepository;
@@ -33,6 +34,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     private final ClientProfileRepository clientProfileRepository;
     private final TrainerService trainerService;
     private final TokenService tokenService;
+    private final SmsNotificationPort smsNotificationPort;
 
     private static final int MAX_ACTIVE_APPOINTMENTS = 3;
 
@@ -41,13 +43,15 @@ public class AppointmentServiceImpl implements AppointmentService {
             TrainerProfileRepository trainerProfileRepository,
             ClientProfileRepository clientProfileRepository,
             TrainerService trainerService,
-            TokenService tokenService
+            TokenService tokenService,
+            SmsNotificationPort smsNotificationPort
     ) {
         this.appointmentRepository = appointmentRepository;
         this.trainerProfileRepository = trainerProfileRepository;
         this.clientProfileRepository = clientProfileRepository;
         this.trainerService = trainerService;
         this.tokenService = tokenService;
+        this.smsNotificationPort = smsNotificationPort;
     }
 
     @Override
@@ -65,10 +69,14 @@ public class AppointmentServiceImpl implements AppointmentService {
             );
         }
 
-        // TODO [NOTIFICATION]:
         // - Send EMAIL to CLIENT: "Your appointment request has been submitted"
+        smsNotificationPort.sendSms(
+                appointment.getClient().getPerson().getPhoneNumber(),
+                "Your appointment request has been submitted");
         // - Send SMS/EMAIL to TRAINER: "New appointment request pending approval"
-        // Ty Dio eisai alani
+        smsNotificationPort.sendSms(
+                appointment.getTrainer().getPerson().getPhoneNumber(),
+                "New appointment request pending approval");
 
 
 

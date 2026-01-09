@@ -3,6 +3,8 @@ package gr.hua.fitTrack.core.service.mapper;
 import gr.hua.fitTrack.core.model.TrainerProfile;
 import gr.hua.fitTrack.core.model.TrainerWeeklyAvailability;
 import gr.hua.fitTrack.core.model.Weekday;
+import gr.hua.fitTrack.core.security.TokenSigner;
+import gr.hua.fitTrack.core.service.model.TrainerSelectableView;
 import gr.hua.fitTrack.core.service.model.TrainerView;
 import gr.hua.fitTrack.core.service.model.WeeklyAvailabilityView;
 import org.springframework.stereotype.Component;
@@ -13,12 +15,14 @@ import java.util.Map;
 @Component
 public class TrainerMapper {
 
+    TokenSigner tokenSigner ;
+
     public TrainerView convertTrainerToTrainerView(TrainerProfile trainerProfile) {
 
         Map<Weekday, WeeklyAvailabilityView> availabilityMap =
                 new EnumMap<>(Weekday.class);
 
-        // 1️⃣ Γέμισμα από DB
+
         for (TrainerWeeklyAvailability wa : trainerProfile.getWeeklyAvailability()) {
             availabilityMap.put(
                     wa.getWeekday(),
@@ -54,4 +58,14 @@ public class TrainerMapper {
                 availabilityMap
         );
     }
+
+    public TrainerSelectableView convertTrainerToSelectableTrainerView(TrainerProfile trainer, String token) {
+        return new TrainerSelectableView(
+                trainer.getPerson().getFirstName(),
+                trainer.getPerson().getLastName(),
+                trainer.getLocation(),
+                trainer.getSpecialization(),
+                token        );
+    }
+
 }

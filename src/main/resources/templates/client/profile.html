@@ -20,14 +20,13 @@
             left: 20px;
             top: 10px;
         }
-        .header-left img {
-            width: 130px;
-        }
+        .header-left img { width: 130px; }
+
         .header-center {
-            text-align: center;
             font-size: xxx-large;
             font-family: "Ultimate", sans-serif;
         }
+
         .header-right {
             position: absolute;
             right: 20px;
@@ -36,7 +35,7 @@
         }
         .header-right a {
             background-color: #634444;
-            color: #ffffff;
+            color: #fff;
             padding: 10px 22px;
             border-radius: 6px;
             text-decoration: none;
@@ -44,32 +43,70 @@
             font-family: "Ultimate";
         }
 
-        .form-container {
+        .profile-container {
+            max-width: 950px;
             margin: 0 auto;
-            max-width: 900px;
-            box-shadow: 12px 12px 0px #533434;
             border: 4px solid #b6b6b6;
-            padding-bottom: 30px;
+            box-shadow: 12px 12px 0 #533434;
+            padding: 30px;
         }
 
-        .form-label {
+        .section-title {
             text-transform: uppercase;
-            font-weight: bold;
+            font-size: 13px;
             letter-spacing: 1px;
-            color: darkgrey;
-            font-size: 12px;
+            color: #999;
+            margin-bottom: 15px;
         }
 
-        .value-box {
+        .appointments-list,
+        .progress-list {
+            max-height: 260px;
+            overflow-y: auto;
+            padding-right: 8px;
+        }
+
+        .appointment-card,
+        .progress-entry,
+        .goal-card {
             border: 2px solid #533434;
-            padding: 10px;
-            background-color: #f4f0f0;
-            font-size: 1.1rem;
+            background: #f4f0f0;
+            border-radius: 6px;
+            padding: 14px;
+            margin-bottom: 12px;
         }
 
-        @font-face {
-            font-family: "Ultimate";
-            src: url("/fonts/Ultimate.otf") format("opentype");
+        .appointment-date {
+            font-weight: bold;
+            color: #533434;
+        }
+
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .status-confirmed {
+            background: #e6f3eb;
+            color: #2e6b4f;
+        }
+        .status-pending {
+            background: #fff4e0;
+            color: #8a5a12;
+        }
+
+        .goals-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .goal-card .value {
+            font-size: 1.4rem;
+            font-weight: bold;
         }
 
         .btn-primary {
@@ -82,15 +119,8 @@
         }
 
         footer {
-            position: fixed;
-            bottom: 10px;
-            left: 50%;
-            transform: translateX(-50%);
             text-align: center;
-        }
-
-        .subtitle {
-            font-size: xx-large;
+            margin: 40px 0 10px;
         }
     </style>
 </head>
@@ -102,137 +132,131 @@
         <a href="/"><img src="/images/logo.png" alt="Logo"></a>
     </div>
 
-    <h1 class="header-center">
+    <div class="header-center">
         Fit Track
-        <small class="subtitle">/ Client Profile</small>
-    </h1>
+        <small style="font-size: xx-large;">/ Client Profile</small>
+    </div>
 
     <div class="header-right">
         <a href="javascript:history.back()">Go Back</a>
     </div>
 </header>
 
-<h1 class="text-center mt-4">Client Profile</h1>
+<h1 class="text-center mt-4 mb-4">Client Profile</h1>
 
-<div class="form-container mt-4">
+<div class="profile-container">
 
-    <!-- BASIC INFO -->
-    <div class="mb-3 mx-4">
-        <label class="form-label">Name</label>
-        <div class="value-box"
-             th:text="${client.firstName + ' ' + client.lastName}">
+    <!-- FLASH MESSAGES -->
+    <div th:if="${error}" class="alert alert-warning text-center">
+        <span th:text="${error}"></span>
+    </div>
+    <div th:if="${success}" class="alert alert-success text-center">
+        <span th:text="${success}"></span>
+    </div>
+
+    <!-- PERSONAL INFO -->
+    <div class="section-title">Personal Information</div>
+
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="form-label">Name</div>
+            <div th:text="${client.firstName + ' ' + client.lastName}"
+
+                 style="font-size: 1.2rem; font-weight: 500;"></div>
         </div>
-    </div>
 
-    <div class="mb-3 mx-4">
-        <label class="form-label">Height</label>
-        <div class="value-box" th:text="${client.height + ' cm'}"></div>
-    </div>
+        <div class="col-md-4">
+            <div class="form-label">Height</div>
+            <div th:text="${client.height + ' cm'}"
+                 style="font-size: 1.2rem; font-weight: 500;"></div>
+        </div>
 
-    <div class="mb-3 mx-4">
-        <label class="form-label">Weight</label>
-        <div class="value-box" th:text="${client.weight + ' kg'}"></div>
+        <div class="col-md-4">
+            <div class="form-label">Weight</div>
+            <div th:text="${client.weight + ' kg'}"
+                 style="font-size: 1.2rem; font-weight: 500;"></div>
+        </div>
     </div>
 
     <!-- APPOINTMENTS -->
-    <div class="mx-4 mb-3">
-    <label class="form-label">APPOINTMENTS</label>
-    <div th:each="appt : ${client.appointments}"
-         class="p-3 mb-3"
-         style="
-        border: 2px solid #533434;
-        background-color: #f4f0f0;
-        border-radius: 6px;
-     ">
+    <div class="section-title">Appointments</div>
 
-        <!-- DATE + TIME -->
-        <div style="color: #533434; font-weight: bold;">
-            <span th:text="${appt.date}"></span>
-            —
-            <span th:text="${appt.startTime}"></span>
-            -
-            <span th:text="${appt.endTime}"></span>
+    <div class="appointments-list">
+        <div th:each="appt : ${client.appointments}" class="appointment-card">
+
+            <div class="appointment-date">
+                <span th:text="${appt.date}"></span> —
+                <span th:text="${appt.startTime}"></span> -
+                <span th:text="${appt.endTime}"></span>
+            </div>
+
+            <div>Trainer: <strong th:text="${appt.trainerName}"></strong></div>
+            <div th:text="${appt.outdoor ? 'Outdoor session' : 'Indoor session'}"></div>
+
+            <div class="mt-2">
+                <span class="status-badge"
+                      th:classappend="${appt.status == 'CONFIRMED'} ? 'status-confirmed' : 'status-pending'"
+                      th:text="${appt.status}">
+                </span>
+            </div>
         </div>
-
-        <!-- TRAINER -->
-        <div class="mt-1">
-            Trainer:
-            <strong th:text="${appt.trainerName}"></strong>
-        </div>
-
-        <!-- OUTDOOR / INDOOR -->
-        <div class="mt-1 text-muted">
-            <strong th:text="${appt.outdoor ? 'Outdoor' : 'Indoor'}"></strong>
-        </div>
-
-        <!-- STATUS -->
-        <div class="mt-1">
-            Status:
-            <strong th:text="${appt.status}"></strong>
-        </div>
-
     </div>
 
+    <!-- REQUEST BUTTON -->
+    <div class="text-end mt-3">
+        <a th:if="${canRequestAppointment}"
+           th:href="@{/client/appointments/request}"
+           class="btn btn-primary">
+            Request Appointment
+        </a>
+
+        <div th:if="${!canRequestAppointment}">
+            <button class="btn btn-primary" disabled>
+                Request Appointment
+            </button>
+            <div class="text-muted mt-2" style="font-size: 0.9rem;">
+                You have reached the maximum number of active appointments.
+            </div>
+        </div>
     </div>
-
-
 
     <!-- GOALS -->
-    <label class="form-label mx-4 mt-4">Goals</label>
+    <div class="section-title mt-5">Goals</div>
 
-    <div class="mx-4 mb-3"
-         th:if="${client.goals != null}">
-        <div class="value-box">
-            <div>Target Weight: <strong th:text="${client.goals.weightGoal}"></strong> kg</div>
-            <div>Running Goal: <strong th:text="${client.goals.runningTimeGoal}"></strong> sec</div>
-            <div>Body Fat Percentage Goal: <strong th:text="${client.goals.bodyFatPercentageGoal}"></strong> %</div>
+    <div th:if="${client.goals != null}" class="goals-grid">
+        <div class="goal-card">
+            <div>Target Weight</div>
+            <div class="value" th:text="${client.goals.weightGoal + ' kg'}"></div>
+        </div>
+        <div class="goal-card">
+            <div>Running Goal</div>
+            <div class="value" th:text="${client.goals.runningTimeGoal + ' sec'}"></div>
+        </div>
+        <div class="goal-card">
+            <div>Body Fat %</div>
+            <div class="value" th:text="${client.goals.bodyFatPercentageGoal + ' %'}"></div>
         </div>
     </div>
 
-    <div class="mx-4 mb-3"
-         th:if="${client.goals == null}">
-        <div class="value-box text-muted">
-            No goals set yet.
-        </div>
-    </div>
-
-    <div style="text-align: right; margin-right: 25px; margin-bottom: 30px;">
-        <a th:href="@{/client/edit/goals}"
-           class="btn btn-primary text-light">
-            Edit Goals
-        </a>
+    <div class="text-end mb-4">
+        <a th:href="@{/client/edit/goals}" class="btn btn-primary">Edit Goals</a>
     </div>
 
     <!-- PROGRESS -->
-    <label class="form-label mx-4 mt-4">Progress History</label>
+    <div class="section-title mt-4">Progress History</div>
 
-    <div class="mx-4 mb-3"
-         th:if="${client.progress.isEmpty()}">
-        <div class="value-box text-muted text-center">
-            No progress recorded yet.
+    <div class="progress-list">
+        <div th:each="p : ${client.progress}" class="progress-entry">
+            <strong th:text="${#temporals.format(p.date,'dd/MM/yyyy')}"></strong>
+            — Weight: <strong th:text="${p.weight}"></strong> kg,
+            Running: <strong th:text="${p.runningTimeSeconds}"></strong> sec,
+            Body Fat: <strong th:text="${p.bodyFatPercentage}"></strong> %,
+            Water: <strong th:text="${p.waterIntake}"></strong> L
         </div>
     </div>
 
-    <div class="mx-4 mb-3"
-         th:each="p : ${client.progress}">
-        <div class="value-box mb-2">
-            <strong th:text="${#temporals.format(p.date, 'dd/MM/yyyy')}"></strong>
-            —
-            Weight:
-            <strong th:text="${p.weight}"></strong> kg,
-            Running:
-            <strong th:text="${p.runningTimeSeconds}"></strong> sec,
-            Body Fat Percentage:
-            <strong th:text="${p.bodyFatPercentage}"></strong> %,
-            Water Intake
-            <strong th:text="${p.waterIntake}"></strong> L
-
-        </div>
-    </div>
-
-    <div style="text-align: right; margin-right: 25px; margin-bottom: 30px;">
-        <a th:href="@{/client/progress/new}"
-           class="btn btn-primary text-light">
+    <div class="text-end mt-3">
+        <a th:href="@{/client/progress/new}" class="btn btn-primary">
             Add Progress
         </a>
     </div>

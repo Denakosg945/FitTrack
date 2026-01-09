@@ -4,7 +4,6 @@ import gr.hua.fitTrack.core.port.GeolocationPort;
 import gr.hua.fitTrack.core.port.WeatherServicePort;
 import gr.hua.fitTrack.core.port.impl.dto.GeolocationResult;
 import gr.hua.fitTrack.core.port.impl.dto.WeatherResponse;
-import gr.hua.fitTrack.core.service.TrainerService;
 import gr.hua.fitTrack.core.service.model.InitializationService;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Profile;
@@ -19,8 +18,11 @@ public class StartupRunner implements ApplicationListener<ContextRefreshedEvent>
     private final WeatherServicePort weatherServicePort;
     private final GeolocationPort geolocationPort;
 
-
-    public StartupRunner(InitializationService initializationService, WeatherServicePort weatherServicePort, GeolocationPort geolocationPort) {
+    public StartupRunner(
+            InitializationService initializationService,
+            WeatherServicePort weatherServicePort,
+            GeolocationPort geolocationPort
+    ) {
         this.initializationService = initializationService;
         this.weatherServicePort = weatherServicePort;
         this.geolocationPort = geolocationPort;
@@ -28,11 +30,15 @@ public class StartupRunner implements ApplicationListener<ContextRefreshedEvent>
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
-        // Hibernate has finished creating/updating tables at this point
+
+        // ✅ ΜΟΝΟ data seeding
         initializationService.populateDatabase();
 
-        GeolocationResult geolocationResult = geolocationPort.getCoordinates("Athens Greece");
-        WeatherResponse weatherResponse = weatherServicePort.getDailyWeatherPrediction(geolocationResult);
+        // ✅ external services (OK εδώ)
+        GeolocationResult geolocationResult =
+                geolocationPort.getCoordinates("Athens Greece");
 
+        WeatherResponse weatherResponse =
+                weatherServicePort.getDailyWeatherPrediction(geolocationResult);
     }
 }

@@ -1,9 +1,12 @@
 package gr.hua.fitTrack.web.rest;
 
+import gr.hua.fitTrack.core.service.AppointmentService;
 import gr.hua.fitTrack.core.service.ClientService;
+import gr.hua.fitTrack.core.service.TrainerService;
 import gr.hua.fitTrack.core.service.model.ClientView;
 import gr.hua.fitTrack.core.service.model.EditGoalsForm;
 import gr.hua.fitTrack.core.service.model.EditProgressForm;
+import gr.hua.fitTrack.core.service.model.RequestAppointmentForm;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,24 +23,34 @@ import java.time.LocalDate;
 public class ClientProfileController {
 
     private final ClientService clientService;
+    private final TrainerService trainerService;
+    private final AppointmentService appointmentService;
 
-    public ClientProfileController(ClientService clientService) {
+    public ClientProfileController(ClientService clientService,
+                                   TrainerService trainerService,
+                                   AppointmentService appointmentService) {
         this.clientService = clientService;
+        this.trainerService = trainerService;
+        this.appointmentService = appointmentService;
     }
 
     @GetMapping("/profile")
     public String clientProfile(Model model) {
 
-        // 🔧 προσωρινά hardcoded για DEV / testing
-        Long testClientPersonId = 2L; // ή ό,τι id έχει ο test client
+        Long testClientPersonId = 2L;
 
         ClientView client =
                 clientService.getClientProfileByPersonId(testClientPersonId);
 
+        boolean canRequest =
+                appointmentService.canClientCreateAppointment(2L);
+
         model.addAttribute("client", client);
+        model.addAttribute("canRequestAppointment", canRequest);
 
         return "client/profile";
     }
+
 
     @GetMapping("/edit/goals")
     public String editGoals(Model model) {
@@ -92,10 +105,6 @@ public class ClientProfileController {
 
         return "redirect:/client/profile";
     }
-
-
-
-
 
 
 }

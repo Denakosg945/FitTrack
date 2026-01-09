@@ -39,7 +39,7 @@
 <body>
 <h1 class="text-center mt-4">Set New Goals</h1>
 
-
+<div class="form-container">
 <form th:action="@{/client/edit/goals}"
       th:object="${goalsForm}"
       method="post">
@@ -76,6 +76,6 @@
     </button>
   </div>
 </form>
-
+</div>
 </body>
 </html>

@@ -1,0 +1,22 @@
+package gr.hua.fitTrack.core.service;
+
+import gr.hua.fitTrack.core.model.Appointment;
+import gr.hua.fitTrack.core.model.ClientProfile;
+import gr.hua.fitTrack.core.service.model.RequestAppointmentForm;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+
+public interface AppointmentService {
+
+    void save(Appointment appointment);
+
+    List<LocalTime> getAvailableTimeSlots(
+            Long trainerPersonId,
+            LocalDate date
+    );
+
+     boolean canClientCreateAppointment(Long clientId);
+
+}

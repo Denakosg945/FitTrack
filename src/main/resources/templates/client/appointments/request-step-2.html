@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fit Track | Request Appointment</title>
+
+    <link rel="icon" type="image/ico" href="/images/favicon.ico">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        header {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 140px;
+        }
+        .header-left {
+            position: absolute;
+            left: 20px;
+            top: 10px;
+        }
+        .header-left img {
+            width: 130px;
+        }
+        .header-center {
+            text-align: center;
+            font-size: xxx-large;
+            font-family: "Ultimate", sans-serif;
+        }
+        .header-right {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        .header-right a {
+            background-color: #634444;
+            color: #ffffff;
+            padding: 10px 22px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 1.3rem;
+            font-family: "Ultimate";
+        }
+
+        .form-container {
+            margin: 0 auto;
+            max-width: 1200px;
+            box-shadow: 12px 12px 0px #533434;
+            border: 4px solid #b6b6b6;
+            padding-bottom: 30px;
+        }
+
+        .form-label {
+            text-transform: uppercase;
+            font-weight: bold;
+            letter-spacing: 1px;
+            color: darkgrey;
+            font-size: 12px;
+        }
+
+        .trainer-card {
+            border: 2px solid #533434;
+            background-color: #f4f0f0;
+            border-radius: 6px;
+            padding: 15px;
+            height: 100%;
+        }
+
+        .trainer-card h5 {
+            font-weight: bold;
+        }
+
+        .trainer-card p {
+            font-size: 0.95rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .btn-primary,
+        .btn-success {
+            background: #533434;
+            border: 0;
+        }
+        .btn-primary:hover,
+        .btn-success:hover {
+            background: #939393;
+        }
+
+        @font-face {
+            font-family: "Ultimate";
+            src: url("/fonts/Ultimate.otf") format("opentype");
+        }
+
+        footer {
+            position: fixed;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+        }
+
+        .subtitle {
+            font-size: xx-large;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div class="header-left">
+        <a href="/"><img src="/images/logo.png" alt="Logo"></a>
+    </div>
+
+    <h1 class="header-center">
+        Fit Track
+        <small class="subtitle">/ Request Appointment</small>
+    </h1>
+
+    <div class="header-right">
+        <a href="javascript:history.back()">Go Back</a>
+    </div>
+</header>
+
+<h1 class="text-center mt-4">
+    Available Trainers for
+    <span th:text="${#temporals.format(date,'dd/MM/yyyy')}"></span>
+</h1>
+
+<div class="form-container mt-4">
+
+    <!-- FILTERS -->
+    <form method="get"
+          th:action="@{/client/appointments/search}"
+          class="mx-4 mt-4">
+
+        <input type="hidden" name="date" th:value="${date}"/>
+
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label">Last Name</label>
+                <select name="lastName" class="form-select">
+                    <option value="">-- Any --</option>
+                    <option th:each="l : ${lastNames}"
+                            th:value="${l}"
+                            th:text="${l}">
+                    </option>
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Location</label>
+                <select name="location" class="form-select">
+                    <option value="">-- Any --</option>
+                    <option th:each="l : ${locations}"
+                            th:value="${l}"
+                            th:text="${l}">
+                    </option>
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Specialization</label>
+                <select name="specialization" class="form-select">
+                    <option value="">-- Any --</option>
+                    <option th:each="s : ${specializations}"
+                            th:value="${s}"
+                            th:text="${s}">
+                    </option>
+                </select>
+            </div>
+        </div>
+
+        <div class="text-end mt-3">
+            <button class="btn btn-primary">Search</button>
+        </div>
+    </form>
+
+    <!-- TRAINERS GRID -->
+    <div class="mx-4 mt-4">
+        <div class="row g-4">
+
+            <div class="col-lg-4 col-md-6"
+                 th:each="t : ${trainers}">
+
+                <div class="trainer-card">
+
+                    <h5 th:text="${t.firstName + ' ' + t.lastName}">
+                        Trainer Name
+                    </h5>
+
+                    <p class="text-muted">
+                        <strong>Location:</strong>
+                        <span th:text="${t.location}"></span>
+                    </p>
+
+                    <p class="text-muted">
+                        <strong>Specialization:</strong>
+                        <span th:text="${t.specialization}"></span>
+                    </p>
+
+                    <p>
+                        <strong>Availability:</strong>
+                        <span th:if="${t.available}">
+                            <span th:text="${t.startTime}"></span>
+                            –
+                            <span th:text="${t.endTime}"></span>
+                        </span>
+                        <span th:if="${!t.available}">
+                            Not available
+                        </span>
+                    </p>
+
+                    <div class="text-end" th:if="${t.available}">
+                        <a class="btn btn-success btn-sm"
+                           th:href="@{/client/appointments/request/step-3(trainerToken=${t.token}, date=${date})}">
+                            Select Trainer
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<footer>
+    © 2025 Harokopio University of Athens
+</footer>
+
+</body>
+</html>

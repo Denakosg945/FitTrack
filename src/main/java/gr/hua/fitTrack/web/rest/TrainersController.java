@@ -28,9 +28,9 @@ public class TrainersController {
         ){
 
 
-        List<String> lastNames = trainerService.getAllUniqueLastNames();
-        List<String> locations = trainerService.getAllUniqueLocations();
-        List<String> specializations = trainerService.getAllUniqueSpecializations();
+        List<String> lastNames = trainerService.getDistinctLastNames();
+        List<String> locations = trainerService.getDistinctLocations();
+        List<String> specializations = trainerService.getDistinctSpecializations();
 
         //Search Results:
         //If search has not happened or all search fields are null, all trainerProfiles are returned.

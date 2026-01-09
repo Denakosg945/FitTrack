@@ -4,6 +4,8 @@ import gr.hua.fitTrack.core.model.Appointment;
 import gr.hua.fitTrack.core.model.ClientProfile;
 import gr.hua.fitTrack.core.model.TrainerProfile;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -24,5 +26,13 @@ public interface AppointmentRepository
     );
 
     List<Appointment> findByClientIdOrderByDateAscStartTimeAsc(Long clientId);
+
+    @Query("""
+        select count(a)
+        from Appointment a
+        where a.client.id = :clientId
+          and a.status in ('PENDING', 'CONFIRMED')
+    """)
+    long countActiveAppointments(@Param("clientId") Long clientId);
 
 }

@@ -1,9 +1,7 @@
 package gr.hua.fitTrack.core.service;
 
-import gr.hua.fitTrack.core.service.model.ClientView;
-import gr.hua.fitTrack.core.service.model.CreateClientRequest;
-import gr.hua.fitTrack.core.service.model.CreateClientResult;
-import gr.hua.fitTrack.core.service.model.EditProgressForm;
+import gr.hua.fitTrack.core.model.ClientProfile;
+import gr.hua.fitTrack.core.service.model.*;
 
 public interface ClientService {
     CreateClientResult createClientProfile(final CreateClientRequest createClientRequest, final boolean notify);
@@ -17,5 +15,8 @@ public interface ClientService {
     void updateGoalsForTestClient(float weightGoal, int runningTimeGoal, int bodyFatPercentageGoal);
 
     void addProgressForTestClient(EditProgressForm form);
+
+    ClientProfile getByEmail(String email);
+
 
 }

@@ -64,6 +64,25 @@ public class Appointment {
         this.notes = notes;
     }
 
+    public static Appointment pending(
+            ClientProfile client,
+            TrainerProfile trainer,
+            LocalDate date,
+            LocalTime startTime,
+            LocalTime endTime,
+            boolean outdoor
+    ) {
+        Appointment a = new Appointment();
+        a.client = client;
+        a.trainer = trainer;
+        a.date = date;
+        a.startTime = startTime;
+        a.endTime = endTime;
+        a.isOutdoor = outdoor;
+        a.status = "PENDING";
+        return a;
+    }
+
     public Long getId() {
         return id;
     }

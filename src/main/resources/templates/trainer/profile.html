@@ -8,6 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
+        /* ===== HEADER ===== */
         header {
             position: relative;
             display: flex;
@@ -20,14 +21,13 @@
             left: 20px;
             top: 10px;
         }
-        .header-left img {
-            width: 130px;
-        }
+        .header-left img { width: 130px; }
+
         .header-center {
-            text-align: center;
             font-size: xxx-large;
             font-family: "Ultimate", sans-serif;
         }
+
         .header-right {
             position: absolute;
             right: 20px;
@@ -36,7 +36,7 @@
         }
         .header-right a {
             background-color: #634444;
-            color: #ffffff;
+            color: #fff;
             padding: 10px 22px;
             border-radius: 6px;
             text-decoration: none;
@@ -44,31 +44,58 @@
             font-family: "Ultimate";
         }
 
-        .form-container {
+        /* ===== CONTAINER ===== */
+        .profile-container {
+            max-width: 950px;
             margin: 0 auto;
-            max-width: 900px;
-            box-shadow: 12px 12px 0px #533434;
             border: 4px solid #b6b6b6;
-            padding-bottom: 30px;
+            box-shadow: 12px 12px 0 #533434;
+            padding: 30px;
         }
 
-        .form-label {
+        /* ===== SECTION HEADERS ===== */
+        .section-title {
             text-transform: uppercase;
-            font-weight: bold;
+            font-size: 13px;
             letter-spacing: 1px;
-            color: darkgrey;
+            color: #999;
+            margin-bottom: 15px;
+        }
+
+        /* ===== INFO ===== */
+        .info-label {
             font-size: 12px;
+            color: #999;
+            text-transform: uppercase;
+        }
+        .info-value {
+            font-size: 1.2rem;
+            font-weight: 500;
         }
 
-        .value-box {
+        /* ===== APPOINTMENTS ===== */
+        .appointments-list {
+            max-height: 260px;
+            overflow-y: auto;
+            padding-right: 8px;
+        }
+
+        .appointment-card {
             border: 2px solid #533434;
-            padding: 10px;
-            background-color: #f4f0f0;
-            font-size: 1.1rem;
+            background: #f4f0f0;
+            border-radius: 6px;
+            padding: 14px;
+            margin-bottom: 12px;
         }
 
+        .appointment-date {
+            font-weight: bold;
+            color: #533434;
+        }
+
+        /* ===== SCHEDULE ===== */
         .schedule {
-            margin: 30px;
+            margin: 20px 0;
             border: 2px solid #533434;
         }
 
@@ -87,30 +114,24 @@
             font-weight: bold;
         }
 
+        /* ===== BUTTON ===== */
+        .btn-primary {
+            background: #533434;
+            border: 0;
+            padding: 0.5em 3em;
+        }
+        .btn-primary:hover {
+            background: #939393;
+        }
+
         @font-face {
             font-family: "Ultimate";
             src: url("/fonts/Ultimate.otf") format("opentype");
         }
 
         footer {
-            position: fixed;
-            bottom: 10px;
-            left: 50%;
-            transform: translateX(-50%);
             text-align: center;
-        }
-
-        .subtitle {
-            font-size: xx-large;
-        }
-
-        .btn-primary {
-            background: #533434;
-            border: 0;
-            padding: 0.5em 4em;
-        }
-        .btn-primary:hover {
-            background: #939393;
+            margin: 40px 0 10px;
         }
     </style>
 </head>
@@ -122,158 +143,83 @@
         <a href="/"><img src="/images/logo.png" alt="Logo"></a>
     </div>
 
-    <h1 class="header-center">
+    <div class="header-center">
         Fit Track
-        <small class="subtitle">/ Trainer Profile</small>
-    </h1>
+        <small style="font-size: xx-large;">/ Trainer Profile</small>
+    </div>
 
     <div class="header-right">
         <a href="javascript:history.back()">Go Back</a>
     </div>
 </header>
 
-<h1 class="text-center mt-4">Trainer Profile</h1>
+<h1 class="text-center mt-4 mb-4">Trainer Profile</h1>
 
-<div class="form-container mt-4">
+<div class="profile-container">
 
     <!-- BASIC INFO -->
-    <div class="mb-3 mx-4">
-        <label class="form-label">Trainer Name</label>
-        <div class="value-box"
-             th:text="${trainer.firstName + ' ' + trainer.lastName}">
+    <div class="section-title">Personal Information</div>
+
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="info-label">Name</div>
+            <div class="info-value"
+                 th:text="${trainer.firstName + ' ' + trainer.lastName}"></div>
+        </div>
+        <div class="col-md-4">
+            <div class="info-label">Location</div>
+            <div class="info-value" th:text="${trainer.location}"></div>
+        </div>
+        <div class="col-md-4">
+            <div class="info-label">Specialization</div>
+            <div class="info-value" th:text="${trainer.specialization}"></div>
         </div>
     </div>
 
-    <div class="mb-3 mx-4">
-        <label class="form-label">Location</label>
-        <div class="value-box" th:text="${trainer.location}"></div>
+    <div class="text-end mb-4">
+        <a th:href="@{/trainer/profile/edit}" class="btn btn-primary">Edit</a>
     </div>
 
-    <div class="mb-3 mx-4">
-        <label class="form-label">Specialization</label>
-        <div class="value-box" th:text="${trainer.specialization}"></div>
-    </div>
+    <!-- UPCOMING APPOINTMENTS -->
+    <div class="section-title">Upcoming Appointments</div>
 
-    <div style="text-align: right; margin-right: 25px; margin-bottom: 30px;">
-        <a th:href="@{/trainer/profile/edit}" class="btn btn-primary text-light">
-            Edit
-        </a>
-    </div>
-
-    <!-- UPCOMING SCHEDULE -->
-    <label class="form-label mx-4 mt-4">Upcoming 7-Day Schedule</label>
-
-    <div class="mx-4 mb-4">
-
-        <div class="row row-cols-1 row-cols-md-2 g-3">
-
-            <div class="col"
-                 th:each="day : ${dailySchedule}">
-
-                <div class="p-3"
-                     th:classappend="
-                    ${day.available} ?
-                        (${day.overridden} ? 'bg-warning-subtle' : 'bg-success-subtle')
-                        : 'bg-secondary-subtle'
-                 "
-                     style="
-                    border: 2px solid #533434;
-                    border-radius: 6px;
-                 ">
-
-                    <!-- DATE + WEEKDAY -->
-                    <div style="font-weight: bold; color: #533434;">
-                        <span th:text="${day.weekdayLabel}"></span>
-                        -
-                        <span th:text="${day.date}"></span>
-                    </div>
-
-                    <!-- AVAILABILITY -->
-                    <div class="mt-2">
-
-                    <span th:if="${day.available}">
-                        <strong th:text="${day.startTime}"></strong>
-                        –
-                        <strong th:text="${day.endTime}"></strong>
-                    </span>
-
-                        <span th:if="${!day.available}">
-                        <strong>Not available</strong>
-                    </span>
-
-                    </div>
-
-                    <!-- OVERRIDE BADGE -->
-                    <div th:if="${day.overridden}" class="mt-2">
-                    <span class="badge text-bg-warning">
-                        Override
-                    </span>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-    </div>
-    <div style="text-align: right; margin-right: 25px; margin-bottom: 30px;">
-
-        <a th:href="@{/trainer/profile/edit/override}"
-           class="btn btn-primary text-light">
-            Override Specific Day
-        </a>
-    </div>
-    <!-- APPOINTMENTS -->
-    <label class="form-label mx-4 mt-4">Upcoming Appointments</label>
-
-    <div class="mx-4 mb-4">
+    <div class="appointments-list">
 
         <div th:if="${#lists.isEmpty(appointments)}"
-             class="value-box text-center">
+             class="text-muted text-center">
             No upcoming appointments
         </div>
 
         <div th:each="appt : ${appointments}"
-             class="p-3 mb-2"
-             style="
-            border: 2px solid #533434;
-            background-color: #f4f0f0;
-            border-radius: 6px;
-         ">
+             class="appointment-card">
 
-            <!-- DATE + TIME -->
-            <div style="color: #533434; font-weight: bold;">
+            <div class="appointment-date">
                 <span th:text="${appt.date}"></span>
                 —
-                <span th:text="${appt.startTime}"></span>
-                -
+                <span th:text="${appt.startTime}"></span> -
                 <span th:text="${appt.endTime}"></span>
             </div>
 
-            <!-- CLIENT -->
             <div class="mt-1">
                 Client:
                 <strong th:text="${appt.clientName}"></strong>
             </div>
 
-            <!-- NOTES -->
             <div class="mt-1 text-muted"
                  th:if="${appt.notes != null}">
                 <em th:text="${appt.notes}"></em>
             </div>
-
         </div>
-
-
     </div>
-    <div style="text-align: right; margin-right: 25px; margin-bottom: 30px;">
-        <a th:href="@{/trainer/clients}"
-            class="btn btn-primary text-light">
+
+    <div class="text-end mt-3 mb-5">
+        <a th:href="@{/trainer/clients}" class="btn btn-primary">
             Clients & Notes
         </a>
     </div>
 
-
     <!-- WEEKLY SCHEDULE -->
-    <label class="form-label mx-4">Weekly Template (Base Schedule)</label>
+    <div class="section-title">Weekly Template (Base Schedule)</div>
 
     <div class="schedule">
         <div class="schedule-row"
@@ -290,12 +236,12 @@
         </div>
     </div>
 
-    <div style="text-align: right; margin-right: 25px; margin-bottom: 30px;">
-        <a th:href="@{/trainer/profile/edit/schedule}"
-           class="btn btn-primary text-light">
+    <div class="text-end">
+        <a th:href="@{/trainer/profile/edit/schedule}" class="btn btn-primary">
             Edit Weekly Schedule
         </a>
     </div>
+
 </div>
 
 <footer>

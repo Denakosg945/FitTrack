@@ -2,6 +2,7 @@ package gr.hua.fitTrack.core.service;
 
 import gr.hua.fitTrack.core.model.ClientProfile;
 import gr.hua.fitTrack.core.service.model.*;
+import jakarta.validation.Valid;
 
 public interface ClientService {
     CreateClientResult createClientProfile(final CreateClientRequest createClientRequest, final boolean notify);
@@ -12,11 +13,13 @@ public interface ClientService {
     ClientView getClientProfileByPersonId(Long testClientPersonId);
 
 
-    void updateGoalsForTestClient(float weightGoal, int runningTimeGoal, int bodyFatPercentageGoal);
+    void updateGoals(String email, float weightGoal, int runningTimeGoal, int bodyFatPercentageGoal);
 
-    void addProgressForTestClient(EditProgressForm form);
+    void addProgress(String email,EditProgressForm form);
 
     ClientProfile getByEmail(String email);
+
+    ClientView getViewByEmail(String email);
 
 
 }

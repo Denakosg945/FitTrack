@@ -89,21 +89,22 @@ public class SecurityConfig {
                 .addFilterBefore(new CookieFilter(personRepository), AuthenticationFilter.class)
                 .csrf(csrf -> csrf.ignoringRequestMatchers("/v3/api-docs/**","/swagger-ui.html","/swagger-ui/**"))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/verifyPhone/**", "/deletePerson/**","/register/**","/login/**",
-                                "/clientProfileCreation/**", "/trainerProfileCreation/**","/register","/trainers",
-                                "/","/login", "/css/**", "/js/**", "/images/**","/v3/api-docs/**",
-                                "/swagger-ui.html","/swagger-ui/**","/error/**").permitAll()
-                        .requestMatchers("/trainerProfileCreation/**").hasRole("TRAINER")
-                        .requestMatchers("/clientProfileCreation/**").hasRole("CLIENT")
+                        .requestMatchers(
+                                "/verifyPhone/**", "/deletePerson/**","/register/**","/login/**",
+                                "/register","/trainers",
+                                "/","/login", "/css/**", "/js/**", "/images/**",
+                                "/v3/api-docs/**","/swagger-ui.html","/swagger-ui/**","/error/**"
+                        ).permitAll()
+
+                        .requestMatchers("/trainer/**").hasRole("TRAINER")
+                        .requestMatchers("/client/**").hasRole("CLIENT")
+
                         .requestMatchers(
                                 "/loginHomepage",
-                                "/loginHomepage/**",
-                                "/trainer/profile/**",
-                                "/client/profile/**"
+                                "/profile"
                         ).authenticated()
-
-
                 )
+
 
                 .formLogin(form -> form
                         .loginPage("/login")      // <-- YOUR CUSTOM PAGE

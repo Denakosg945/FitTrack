@@ -11,6 +11,7 @@ public record ClientView(
         Long clientId,
         String firstName,
         String lastName,
+        String email,
         int weight,
         int height,
         Goals goals,

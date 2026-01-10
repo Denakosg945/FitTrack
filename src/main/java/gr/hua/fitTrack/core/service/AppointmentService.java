@@ -17,6 +17,6 @@ public interface AppointmentService {
             LocalDate date
     );
 
-     boolean canClientCreateAppointment(Long clientId);
+     boolean canClientCreateAppointment(String email);
 
 }

@@ -4,7 +4,6 @@ import gr.hua.fitTrack.core.model.ClientProfile;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-
 import java.util.Optional;
 
 public interface ClientProfileRepository extends JpaRepository<ClientProfile, Integer> {
@@ -20,4 +19,13 @@ public interface ClientProfileRepository extends JpaRepository<ClientProfile, In
     Optional<ClientProfile> findByPersonIdWithGoalsAndProgress(
             @Param("personId") Long personId
     );
+
+    @Query("""
+    select cp
+    from ClientProfile cp
+    left join fetch cp.progress
+    where upper(cp.person.emailAddress) = upper(:email)
+""")
+    Optional<ClientProfile> findByEmailWithProgress(@Param("email") String email);
+
 }

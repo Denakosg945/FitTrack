@@ -7,11 +7,8 @@ import gr.hua.fitTrack.core.service.ClientService;
 import gr.hua.fitTrack.core.service.mapper.AppointmentMapper;
 import gr.hua.fitTrack.core.service.mapper.ClientMapper;
 import gr.hua.fitTrack.core.service.model.*;
-import gr.hua.fitTrack.core.security.TokenUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalTime;
 
 @Service
 public class ClientServiceImpl implements ClientService {
@@ -123,9 +120,9 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public void updateGoalsForTestClient(float weight, int running, int bodyFat) {
+    public void updateGoals(String email, float weight, int running, int bodyFat) {
         ClientProfile client = clientProfileRepository
-                .findByPersonId(2L)
+                .findByEmailWithProgress(email)
                 .orElseThrow();
 
         Goals goals = client.getGoals();
@@ -144,10 +141,10 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     @Transactional
-    public void addProgressForTestClient(EditProgressForm form) {
+    public void addProgress(String email,EditProgressForm form) {
 
         ClientProfile client = clientProfileRepository
-                .findByPersonId(2L) // προσωρινά hardcoded
+                .findByEmailWithProgress(email)
                 .orElseThrow();
 
         Progress progress = new Progress();
@@ -183,4 +180,15 @@ public class ClientServiceImpl implements ClientService {
                         new IllegalArgumentException("Client profile not found for email: " + email)
                 );
     }
+
+    @Override
+    public ClientView getViewByEmail(String email) {
+
+        ClientProfile clientProfile =
+                clientProfileRepository.findByEmailWithProgress(email)
+                        .orElseThrow(() -> new RuntimeException("Client not found"));
+
+        return clientMapper.converClientToClientView(clientProfile);
+    }
+
 }

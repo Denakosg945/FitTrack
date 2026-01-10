@@ -25,14 +25,16 @@ public interface AppointmentRepository
             LocalDate end
     );
 
-    List<Appointment> findByClientIdOrderByDateAscStartTimeAsc(Long clientId);
+    List<Appointment> findByClient_Person_EmailAddressOrderByDateAscStartTimeAsc
+            (String email);
 
     @Query("""
-        select count(a)
-        from Appointment a
-        where a.client.id = :clientId
-          and a.status in ('PENDING', 'CONFIRMED')
-    """)
-    long countActiveAppointments(@Param("clientId") Long clientId);
+    select count(a)
+    from Appointment a
+    where a.client.person.emailAddress = :email
+      and a.status = 'ACTIVE'
+""")
+    long countActiveAppointments(@Param("email") String email);
+
 
 }

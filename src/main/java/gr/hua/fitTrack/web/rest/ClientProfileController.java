@@ -6,7 +6,6 @@ import gr.hua.fitTrack.core.service.TrainerService;
 import gr.hua.fitTrack.core.service.model.ClientView;
 import gr.hua.fitTrack.core.service.model.EditGoalsForm;
 import gr.hua.fitTrack.core.service.model.EditProgressForm;
-import gr.hua.fitTrack.core.service.model.RequestAppointmentForm;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,7 +15,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.time.LocalDate;
+import java.security.Principal;
 
 @Controller
 @RequestMapping("/client")
@@ -35,15 +34,12 @@ public class ClientProfileController {
     }
 
     @GetMapping("/profile")
-    public String clientProfile(Model model) {
+    public String clientProfile(Model model, Principal principal) {
 
-        Long testClientPersonId = 2L;
+        String email = principal.getName();
 
-        ClientView client =
-                clientService.getClientProfileByPersonId(testClientPersonId);
-
-        boolean canRequest =
-                appointmentService.canClientCreateAppointment(2L);
+        ClientView client = clientService.getViewByEmail(email);
+        boolean canRequest = appointmentService.canClientCreateAppointment(email);
 
         model.addAttribute("client", client);
         model.addAttribute("canRequestAppointment", canRequest);
@@ -51,20 +47,18 @@ public class ClientProfileController {
         return "client/profile";
     }
 
-
     @GetMapping("/edit/goals")
-    public String editGoals(Model model) {
+    public String editGoals(Model model, Principal principal) {
+
+        String email = principal.getName();
+        ClientView client = clientService.getViewByEmail(email);
 
         EditGoalsForm form = new EditGoalsForm();
 
-        // (προαιρετικά) αν υπάρχουν goals → preload
-        ClientView client = clientService.getClientProfileByPersonId(2L); // προσωρινά
         if (client.goals() != null) {
             form.setWeightGoal(client.goals().getWeightGoal());
             form.setRunningTimeGoal(client.goals().getRunningTimeGoal());
-            form.setBodyFatPercentageGoal(
-                    client.goals().getBodyFatPercentageGoal()
-            );
+            form.setBodyFatPercentageGoal(client.goals().getBodyFatPercentageGoal());
         }
 
         model.addAttribute("goalsForm", form);
@@ -72,9 +66,12 @@ public class ClientProfileController {
     }
 
     @PostMapping("/edit/goals")
-    public String saveGoals(@ModelAttribute EditGoalsForm goalsForm) {
+    public String saveGoals(@ModelAttribute EditGoalsForm goalsForm, Principal principal) {
 
-        clientService.updateGoalsForTestClient(
+        String email = principal.getName();
+
+        clientService.updateGoals(
+                email,
                 goalsForm.getWeightGoal(),
                 goalsForm.getRunningTimeGoal(),
                 goalsForm.getBodyFatPercentageGoal()
@@ -85,27 +82,24 @@ public class ClientProfileController {
 
     @GetMapping("/progress/new")
     public String newProgress(Model model) {
-
-        EditProgressForm form = new EditProgressForm();
-        model.addAttribute("progressForm", form);
+        model.addAttribute("progressForm", new EditProgressForm());
         return "client/progress/new";
     }
 
     @PostMapping("/progress/new")
     public String saveProgress(
             @Valid @ModelAttribute("progressForm") EditProgressForm progressForm,
-            BindingResult bindingResult
+            BindingResult bindingResult,
+            Principal principal
     ) {
-
         if (bindingResult.hasErrors()) {
             return "client/progress/new";
         }
 
-        clientService.addProgressForTestClient(progressForm);
+        clientService.addProgress(principal.getName(), progressForm);
 
         return "redirect:/client/profile";
     }
-
-
 }
+
 

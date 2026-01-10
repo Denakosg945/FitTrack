@@ -17,6 +17,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -37,9 +38,6 @@ public class ClientAppointmentController {
         this.clientService = clientService;
     }
 
-    // --------------------------------------------
-    // STEP 1 — Choose Date (ENTRY POINT)
-    // --------------------------------------------
     @GetMapping("/request")
     public String showStep1(Model model) {
         model.addAttribute("form", new RequestAppointmentForm());
@@ -55,7 +53,6 @@ public class ClientAppointmentController {
             return "client/appointments/request-step-1";
         }
 
-        // safety
         if (form.getDate() == null || form.getDate().isBefore(LocalDate.now())) {
             return "redirect:/client/appointments/request";
         }
@@ -63,15 +60,11 @@ public class ClientAppointmentController {
         return "redirect:/client/appointments/search?date=" + form.getDate();
     }
 
-    // --------------------------------------------
-    // STEP 2 — Choose Trainer
-    // --------------------------------------------
     @GetMapping("/search")
     public String searchTrainers(
             @RequestParam("date")
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
             LocalDate date,
-
             @RequestParam(required = false) String lastName,
             @RequestParam(required = false) String location,
             @RequestParam(required = false) String specialization,
@@ -82,11 +75,9 @@ public class ClientAppointmentController {
         }
 
         model.addAttribute("date", date);
-
         model.addAttribute("lastNames", trainerService.getDistinctLastNames());
         model.addAttribute("locations", trainerService.getDistinctLocations());
         model.addAttribute("specializations", trainerService.getDistinctSpecializations());
-
         model.addAttribute(
                 "trainers",
                 trainerService.getSelectableWithAvailability(date, lastName, location, specialization)
@@ -95,17 +86,12 @@ public class ClientAppointmentController {
         return "client/appointments/request-step-2";
     }
 
-    // --------------------------------------------
-    // STEP 3 — Choose Time Slot
-    // --------------------------------------------
     @GetMapping("/request/step-3")
     public String selectTimeSlot(
             @RequestParam("trainerToken") String trainerToken,
-
             @RequestParam("date")
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
             LocalDate date,
-
             Model model
     ) {
         if (date.isBefore(LocalDate.now())) {
@@ -122,28 +108,22 @@ public class ClientAppointmentController {
                 );
 
         model.addAttribute("trainer", trainerView);
-        model.addAttribute("trainerToken", trainerToken); // σημαντικό για links/forms
+        model.addAttribute("trainerToken", trainerToken);
         model.addAttribute("date", date);
         model.addAttribute("slots", slots);
 
         return "client/appointments/request-step-3";
     }
 
-    // --------------------------------------------
-    // STEP 4 — Overview & isOutdoor
-    // --------------------------------------------
     @GetMapping("/request/confirm")
     public String confirmOverview(
             @RequestParam("trainerToken") String trainerToken,
-
             @RequestParam("date")
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
             LocalDate date,
-
             @RequestParam("startTime")
             @DateTimeFormat(iso = DateTimeFormat.ISO.TIME)
             LocalTime startTime,
-
             Model model
     ) {
         if (date.isBefore(LocalDate.now())) {
@@ -151,20 +131,16 @@ public class ClientAppointmentController {
         }
 
         TrainerSelectableView trainerView = trainerService.getTrainerSelectableViewByToken(trainerToken);
-        LocalTime endTime = startTime.plusHours(1);
 
         model.addAttribute("trainer", trainerView);
         model.addAttribute("trainerToken", trainerToken);
         model.addAttribute("date", date);
         model.addAttribute("startTime", startTime);
-        model.addAttribute("endTime", endTime);
+        model.addAttribute("endTime", startTime.plusHours(1));
 
         return "client/appointments/request-confirm";
     }
 
-    // --------------------------------------------
-    // Save as PENDING
-    // --------------------------------------------
     @PostMapping("/request/confirm")
     public String submitAppointment(
             @RequestParam("trainerToken") String trainerToken,
@@ -175,9 +151,10 @@ public class ClientAppointmentController {
             @DateTimeFormat(iso = DateTimeFormat.ISO.TIME)
             LocalTime startTime,
             @RequestParam(value = "outdoor", defaultValue = "false") boolean outdoor,
-            RedirectAttributes redirectAttributes
+            RedirectAttributes redirectAttributes,
+            Principal principal
     ) {
-        ClientProfile client = clientService.getByEmail("test.client@fittrack.com");
+        ClientProfile client = clientService.getByEmail(principal.getName());
         TrainerProfile trainer = trainerService.getTrainerByToken(trainerToken);
 
         Appointment appointment = Appointment.pending(
@@ -199,5 +176,4 @@ public class ClientAppointmentController {
         redirectAttributes.addFlashAttribute("success", "Appointment requested successfully.");
         return "redirect:/client/profile";
     }
-
 }

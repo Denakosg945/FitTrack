@@ -255,8 +255,8 @@
         MENU
         <div class="dropdown-content">
             <!-- PROFILE (POST) -->
-            <form th:action="@{/profile}" method="post">
-                <button type="submit" class="dropdown-item">Profile</button>
+            <a th:href="@{/profile}" class="dropdown-item">Profile</a>
+
             </form>
             <!-- LOGOUT (POST) -->
             <form th:action="@{/logout}" method="post">

@@ -59,7 +59,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
         long activeCount =
                 appointmentRepository.countActiveAppointments(
-                        appointment.getClient().getId()
+                        appointment.getClient().getPerson().getEmailAddress()
                 );
 
 
@@ -141,11 +141,9 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    public boolean canClientCreateAppointment(Long clientId) {
+    public boolean canClientCreateAppointment(String email) {
         long activeCount =
-                appointmentRepository.countActiveAppointments(
-                        clientId
-                );
+                appointmentRepository.countActiveAppointments(email);
 
         return activeCount < MAX_ACTIVE_APPOINTMENTS;
     }

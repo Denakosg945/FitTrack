@@ -39,7 +39,7 @@ public class ClientMapper {
                         .map(progressMapper::toView)
                         .toList();
 
-        List<Appointment> appointments = appointmentRepository.findByClientIdOrderByDateAscStartTimeAsc(client.getId());
+        List<Appointment> appointments = appointmentRepository.findByClient_Person_EmailAddressOrderByDateAscStartTimeAsc(client.getPerson().getEmailAddress());
         List<AppointmentView> appointmentViews =
                 appointments.stream()
                         .map(appointmentMapper::toView)
@@ -51,6 +51,7 @@ public class ClientMapper {
                 client.getId(),
                 client.getPerson().getFirstName(),
                 client.getPerson().getLastName(),
+                client.getPerson().getEmailAddress(),
                 client.getWeight(),
                 client.getHeight(),
                 client.getGoals(),

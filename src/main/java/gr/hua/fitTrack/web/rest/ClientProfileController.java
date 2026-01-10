@@ -36,6 +36,7 @@ public class ClientProfileController {
     @GetMapping("/profile")
     public String clientProfile(Model model, Principal principal) {
 
+
         String email = principal.getName();
 
         ClientView client = clientService.getViewByEmail(email);

@@ -156,6 +156,12 @@
                 <input th:field="*{code}" placeholder="2FA Code here!" required class="form-control">
             </div>
 
+            <div th:if="${errorMessage}" style="color: red; text-align: center; margin-bottom: 10px;">
+                <p th:text="${errorMessage}"></p>
+            </div>
+
+            <br>
+
             <div class="mb-3">
                 <button type="submit" class="btn btn-primary">Verify</button>
             </div>

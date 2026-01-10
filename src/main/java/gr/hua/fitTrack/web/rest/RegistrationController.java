@@ -9,6 +9,7 @@ import gr.hua.fitTrack.core.service.model.CreatePersonResult;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -64,9 +65,14 @@ public class RegistrationController {
             HttpServletResponse response
         ){
 
-        //TODO: Validation, UI errors
-        final CreatePersonResult createPersonResult = personService.createPerson(createPersonRequest);
+        final CreatePersonResult createPersonResult;
 
+        try {
+             createPersonResult = personService.createPerson(createPersonRequest);
+        }catch(DataIntegrityViolationException ex) {
+            model.addAttribute("errorMessage", "Phone number or email already exists");
+            return "register"; // stay on the same page
+        }
 
         if (createPersonResult.created()){
             //Generate cookie to authorize verifyPhone

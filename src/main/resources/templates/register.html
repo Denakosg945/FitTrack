@@ -157,9 +157,15 @@
                 <!--PASSWORD RAW-->
                 <div class="mb-3">
                     <label class="form-label">Password: </label>
-                    <!--TODO: RAW PASSWORD, NOT HASH-->
+
                     <input th:field="*{rawPassword}"placeholder = "Password" type="password" required  class="form-control">
                 </div>
+                <br>
+
+                <div th:if="${errorMessage}" style="color: red; text-align: center; margin-bottom: 10px;">
+                    <p th:text="${errorMessage}"></p>
+                </div>
+
                 <br>
                 <!--REGISTER BUTTON-->
                 <div class="mb-6" style="text-align: center;">

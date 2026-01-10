@@ -36,7 +36,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     private final TokenService tokenService;
     private final SmsNotificationPort smsNotificationPort;
 
-    private static final int MAX_ACTIVE_APPOINTMENTS = 3;
+    private static final int MAX_ACTIVE_APPOINTMENTS = 5;
 
     public AppointmentServiceImpl(
             AppointmentRepository appointmentRepository,

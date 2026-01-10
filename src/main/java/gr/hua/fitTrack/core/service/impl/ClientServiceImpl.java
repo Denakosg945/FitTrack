@@ -96,6 +96,7 @@ public class ClientServiceImpl implements ClientService {
 
         clientProfile = clientProfileRepository.save(clientProfile);
 
+
         if (notify) {
             smsNotificationPort.sendSms(
                     person.getPhoneNumber(),

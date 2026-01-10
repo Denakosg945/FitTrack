@@ -48,7 +48,7 @@ public class SmsNotificationPortImpl implements SmsNotificationPort {
 
         if (e164.startsWith("+30692") || e164.startsWith("+30690000")) {
             LOGGER.warn("Not allocated E164 {}. Aborting...", e164);
-            personRepository.deleteByPhoneNumber(e164);
+            //personRepository.deleteByPhoneNumber(e164);
             return true;
         }
 
@@ -69,7 +69,7 @@ public class SmsNotificationPortImpl implements SmsNotificationPort {
             return result.sent();
         }
 
-        personRepository.deleteByPhoneNumber(e164);
+        //personRepository.deleteByPhoneNumber(e164);
         throw new RuntimeException("External service responded with " + response.getStatusCode());
     }
 }

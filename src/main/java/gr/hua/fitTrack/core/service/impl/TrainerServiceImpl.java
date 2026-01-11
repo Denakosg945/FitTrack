@@ -360,9 +360,11 @@ public class TrainerServiceImpl implements TrainerService {
                 .findByTrainerAndDateBetweenOrderByDateAscStartTimeAsc(trainer, today, end)
                 .stream()
                 .map(a -> new TrainerAppointmentView(
+                        a.getId(),
                         a.getDate(),
                         a.getStartTime(),
                         a.getEndTime(),
+                        a.getStatus(),
                         a.getClient().getPerson().getFirstName() + " " +
                                 a.getClient().getPerson().getLastName(),
                         a.getNotes()

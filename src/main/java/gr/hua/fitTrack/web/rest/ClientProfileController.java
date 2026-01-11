@@ -35,6 +35,10 @@ public class ClientProfileController {
 
     @GetMapping("/profile")
     public String clientProfile(Model model, Principal principal) {
+        if (principal == null) {
+            return "redirect:/login";
+        }
+
 
 
         String email = principal.getName();
@@ -50,6 +54,10 @@ public class ClientProfileController {
 
     @GetMapping("/edit/goals")
     public String editGoals(Model model, Principal principal) {
+        if (principal == null) {
+            return "redirect:/login";
+        }
+
 
         String email = principal.getName();
         ClientView client = clientService.getViewByEmail(email);
@@ -68,6 +76,11 @@ public class ClientProfileController {
 
     @PostMapping("/edit/goals")
     public String saveGoals(@ModelAttribute EditGoalsForm goalsForm, Principal principal) {
+
+        if (principal == null) {
+            return "redirect:/login";
+        }
+
 
         String email = principal.getName();
 
@@ -93,6 +106,10 @@ public class ClientProfileController {
             BindingResult bindingResult,
             Principal principal
     ) {
+        if (principal == null) {
+            return "redirect:/login";
+        }
+
         if (bindingResult.hasErrors()) {
             return "client/progress/new";
         }

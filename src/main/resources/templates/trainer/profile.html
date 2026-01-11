@@ -8,7 +8,6 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
-        /* ===== HEADER ===== */
         header {
             position: relative;
             display: flex;
@@ -16,11 +15,7 @@
             justify-content: center;
             height: 140px;
         }
-        .header-left {
-            position: absolute;
-            left: 20px;
-            top: 10px;
-        }
+        .header-left { position: absolute; left: 20px; top: 10px; }
         .header-left img { width: 130px; }
 
         .header-center {
@@ -44,7 +39,6 @@
             font-family: "Ultimate";
         }
 
-        /* ===== CONTAINER ===== */
         .profile-container {
             max-width: 950px;
             margin: 0 auto;
@@ -53,7 +47,6 @@
             padding: 30px;
         }
 
-        /* ===== SECTION HEADERS ===== */
         .section-title {
             text-transform: uppercase;
             font-size: 13px;
@@ -62,18 +55,6 @@
             margin-bottom: 15px;
         }
 
-        /* ===== INFO ===== */
-        .info-label {
-            font-size: 12px;
-            color: #999;
-            text-transform: uppercase;
-        }
-        .info-value {
-            font-size: 1.2rem;
-            font-weight: 500;
-        }
-
-        /* ===== APPOINTMENTS ===== */
         .appointments-list {
             max-height: 260px;
             overflow-y: auto;
@@ -93,7 +74,6 @@
             color: #533434;
         }
 
-        /* ===== SCHEDULE ===== */
         .schedule {
             margin: 20px 0;
             border: 2px solid #533434;
@@ -109,29 +89,29 @@
         }
 
         .day-label {
-            width: 120px;
+            width: 140px;
             color: #533434;
             font-weight: bold;
         }
 
-        /* ===== BUTTON ===== */
         .btn-primary {
             background: #533434;
             border: 0;
-            padding: 0.5em 3em;
+            padding: 0.4em 2em;
         }
-        .btn-primary:hover {
-            background: #939393;
+        .btn-primary:hover { background: #939393; }
+
+        .btn-success { padding: 0.3em 1.2em; }
+        .btn-danger { padding: 0.3em 1.2em; }
+
+        footer {
+            text-align: center;
+            margin: 40px 0 10px;
         }
 
         @font-face {
             font-family: "Ultimate";
             src: url("/fonts/Ultimate.otf") format("opentype");
-        }
-
-        footer {
-            text-align: center;
-            margin: 40px 0 10px;
         }
     </style>
 </head>
@@ -144,8 +124,7 @@
     </div>
 
     <div class="header-center">
-        Fit Track
-        <small style="font-size: xx-large;">/ Trainer Profile</small>
+        Fit Track <small style="font-size: xx-large;">/ Trainer Profile</small>
     </div>
 
     <div class="header-right">
@@ -157,7 +136,7 @@
 
 <div class="profile-container">
 
-    <!-- BASIC INFO -->
+    <!-- ================= BASIC INFO ================= -->
     <div class="section-title">Personal Information</div>
 
     <div class="row mb-4">
@@ -166,10 +145,12 @@
             <div class="info-value"
                  th:text="${trainer.firstName + ' ' + trainer.lastName}"></div>
         </div>
+
         <div class="col-md-4">
             <div class="info-label">Location</div>
             <div class="info-value" th:text="${trainer.location}"></div>
         </div>
+
         <div class="col-md-4">
             <div class="info-label">Specialization</div>
             <div class="info-value" th:text="${trainer.specialization}"></div>
@@ -177,68 +158,112 @@
     </div>
 
     <div class="text-end mb-4">
-        <a th:href="@{/trainer/profile/edit}" class="btn btn-primary">Edit</a>
+        <a th:href="@{/trainer/profile/edit}" class="btn btn-primary">
+            Edit Profile
+        </a>
     </div>
 
-    <!-- UPCOMING APPOINTMENTS -->
+    <!-- ================= UPCOMING ================= -->
     <div class="section-title">Upcoming Appointments</div>
 
     <div class="appointments-list">
-
-        <div th:if="${#lists.isEmpty(appointments)}"
+        <div th:if="${#lists.isEmpty(upcomingAppointments)}"
              class="text-muted text-center">
-            No upcoming appointments
+            No confirmed appointments
         </div>
 
-        <div th:each="appt : ${appointments}"
-             class="appointment-card">
-
+        <div th:each="appt : ${upcomingAppointments}" class="appointment-card">
             <div class="appointment-date">
-                <span th:text="${appt.date}"></span>
-                —
+                <span th:text="${appt.date}"></span> —
                 <span th:text="${appt.startTime}"></span> -
                 <span th:text="${appt.endTime}"></span>
             </div>
-
-            <div class="mt-1">
-                Client:
-                <strong th:text="${appt.clientName}"></strong>
-            </div>
-
-            <div class="mt-1 text-muted"
-                 th:if="${appt.notes != null}">
+            <div>Client: <strong th:text="${appt.clientName}"></strong></div>
+            <div class="text-muted" th:if="${appt.notes != null}">
                 <em th:text="${appt.notes}"></em>
             </div>
         </div>
     </div>
 
-    <div class="text-end mt-3 mb-5">
-        <a th:href="@{/trainer/clients}" class="btn btn-primary">
-            Clients & Notes
-        </a>
+    <!-- ================= PENDING ================= -->
+    <div class="section-title mt-5">Pending Appointment Requests</div>
+
+    <div class="appointments-list">
+        <div th:if="${#lists.isEmpty(pendingAppointments)}"
+             class="text-muted text-center">
+            No pending requests
+        </div>
+
+        <div th:each="appt : ${pendingAppointments}" class="appointment-card">
+            <div class="appointment-date">
+                <span th:text="${appt.date}"></span> —
+                <span th:text="${appt.startTime}"></span> -
+                <span th:text="${appt.endTime}"></span>
+            </div>
+
+            <div>Client: <strong th:text="${appt.clientName}"></strong></div>
+
+            <div class="mt-3 d-flex gap-2">
+                <form th:action="@{/trainer/appointments/{id}/respond(id=${appt.appointmentId})}" method="post">
+                    <input type="hidden" name="accept" value="true">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                    <button class="btn btn-success btn-sm">Approve</button>
+                </form>
+
+                <form th:action="@{/trainer/appointments/{id}/respond(id=${appt.appointmentId})}" method="post">
+                    <input type="hidden" name="accept" value="false">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                    <button class="btn btn-danger btn-sm">Reject</button>
+                </form>
+            </div>
+        </div>
     </div>
 
-    <!-- WEEKLY SCHEDULE -->
-    <div class="section-title">Weekly Template (Base Schedule)</div>
+    <!-- ================= WEEKLY SCHEDULE ================= -->
+    <div class="section-title mt-5">Weekly Template (Base Schedule)</div>
 
     <div class="schedule">
         <div class="schedule-row"
              th:each="entry : ${trainer.weeklyAvailability}">
             <div class="day-label" th:text="${entry.key}"></div>
-            <div>
-                Start:
+            <div>Start:
                 <strong th:text="${entry.value.startTime != null ? entry.value.startTime : 'N/A'}"></strong>
             </div>
-            <div>
-                End:
+            <div>End:
                 <strong th:text="${entry.value.endTime != null ? entry.value.endTime : 'N/A'}"></strong>
             </div>
         </div>
     </div>
 
-    <div class="text-end">
+    <div class="text-end mb-4">
         <a th:href="@{/trainer/profile/edit/schedule}" class="btn btn-primary">
             Edit Weekly Schedule
+        </a>
+    </div>
+
+    <!-- ================= OVERRIDES / NEXT 7 DAYS ================= -->
+    <div class="section-title">Daily Schedule (Next 7 Days)</div>
+
+    <div class="schedule">
+        <div class="schedule-row"
+             th:each="day : ${dailySchedule}">
+            <div class="day-label" th:text="${day.weekdayLabel + ' ' + day.date}"></div>
+
+            <div th:if="${!day.available}">
+                <strong>Unavailable</strong>
+            </div>
+
+            <div th:if="${day.available}">
+                <span th:text="${day.startTime}"></span> -
+                <span th:text="${day.endTime}"></span>
+                <span th:if="${day.overridden}" class="text-muted">(override)</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-end">
+        <a th:href="@{/trainer/profile/edit/override}" class="btn btn-primary">
+            Add / Edit Override
         </a>
     </div>
 

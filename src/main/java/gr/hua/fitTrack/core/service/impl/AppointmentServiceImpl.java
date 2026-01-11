@@ -149,5 +149,94 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
 
+    @Override
+    @Transactional
+    public void respondToAppointment(
+            Long appointmentId,
+            Long trainerPersonId,
+            boolean accept
+    ) {
+        Appointment appointment =
+                appointmentRepository.findById(appointmentId)
+                        .orElseThrow(() ->
+                                new IllegalArgumentException("Appointment not found")
+                        );
+
+        if (!appointment.getTrainer().getPerson().getId().equals(trainerPersonId)) {
+            throw new SecurityException("Trainer not allowed");
+        }
+
+        if (!"PENDING".equals(appointment.getStatus())) {
+            throw new IllegalStateException("Appointment already processed");
+        }
+
+        if (accept) {
+            appointment.setStatus("CONFIRMED");
+            /*
+            smsNotificationPort.sendSms(
+                    appointment.getClient().getPerson().getPhoneNumber(),
+                    "Your appointment on " +
+                            appointment.getDate() + " at " +
+                            appointment.getStartTime() +
+                            " has been CONFIRMED."
+            );
+
+
+        } else {
+
+            appointment.setStatus("REJECTED");
+
+            smsNotificationPort.sendSms(
+                    appointment.getClient().getPerson().getPhoneNumber(),
+                    "Your appointment on " +
+                            appointment.getDate() + " at " +
+                            appointment.getStartTime() +
+                            " has been REJECTED."
+            );
+
+             */
+        }
+
+
+
+    }
+    @Override
+    public void rejectAppointment(Long appointmentId, Long trainerPersonId) {
+
+        Appointment appointment =
+                appointmentRepository.findById(appointmentId)
+                        .orElseThrow(() -> new IllegalArgumentException("Appointment not found"));
+
+        if (!appointment.getTrainer().getPerson().getId().equals(trainerPersonId)) {
+            throw new SecurityException("Not allowed to reject this appointment");
+        }
+
+        appointmentRepository.delete(appointment);
+    }
+
+    @Override
+    public void approveAppointment(Long appointmentId, Long trainerPersonId) {
+
+        Appointment appointment =
+                appointmentRepository.findById(appointmentId)
+                        .orElseThrow(() -> new IllegalArgumentException("Appointment not found"));
+
+        if (!appointment.getTrainer().getPerson().getId().equals(trainerPersonId)) {
+            throw new SecurityException("Not allowed");
+        }
+
+        appointment.setStatus("CONFIRMED");
+        /*
+        smsNotificationPort.sendSms(
+                appointment.getClient().getPerson().getPhoneNumber(),
+                "Your appointment on " + appointment.getDate() + " at " +
+                        appointment.getStartTime() + " has been confirmed."
+        );
+        */
+    }
+
+
+
+
 
 }

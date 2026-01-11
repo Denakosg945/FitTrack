@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.security.Principal;
 import java.time.LocalTime;
 import java.util.*;
 
@@ -28,42 +29,66 @@ public class TrainerProfileController {
     // PROFILE VIEW
     // =========================
     @GetMapping("/profile")
-    public String trainerProfile(Model model) {
+    public String trainerProfile(Model model, Principal principal) {
+        if (principal == null) {
+            return "redirect:/login";
+        }
 
+        String email = principal.getName();
+        TrainerView trainer = trainerService.getTrainerProfileByEmail(email);
 
-        Long TEST_TRAINER_PERSON_ID = 1L;
-
-        TrainerView trainer =
-                trainerService.getTrainerProfileByPersonId(TEST_TRAINER_PERSON_ID);
 
         List<TrainerAppointmentView> appointments =
-                trainerService.getTrainerAppointmentsNext7Days(TEST_TRAINER_PERSON_ID);
+                Optional.ofNullable(
+                        trainerService.getTrainerAppointmentsNext7Days(trainer.personId())
+                ).orElse(List.of());
+
+        System.out.println("Trainer personId=" + trainer.personId());
+        System.out.println("Appointments next7days size=" + appointments.size());
+        appointments.stream().limit(5).forEach(a ->
+                System.out.println("appt id=" + a.appointmentId() + " date=" + a.date() + " status=" + a.status())
+        );
+
+        List<TrainerAppointmentView> pendingAppointments =
+                appointments.stream()
+                        .filter(a -> "PENDING".equals(a.status()))
+                        .toList();
+
+        List<TrainerAppointmentView> upcomingAppointments =
+                appointments.stream()
+                        .filter(a -> "CONFIRMED".equals(a.status()))
+                        .toList();
 
         model.addAttribute("trainer", trainer);
+        model.addAttribute("pendingAppointments", pendingAppointments);
+        model.addAttribute("upcomingAppointments", upcomingAppointments);
         model.addAttribute(
                 "dailySchedule",
-                trainerService.getTrainerScheduleForNext7Days(TEST_TRAINER_PERSON_ID)
+                trainerService.getTrainerScheduleForNext7Days(trainer.personId())
         );
-        model.addAttribute("appointments", appointments);
-
 
         return "trainer/profile";
     }
+
 
     // =========================
     // EDIT PROFILE
     // =========================
     @GetMapping("/profile/edit")
-    public String editProfile(Model model) {
+    public String editProfile(Model model, Principal principal) {
 
-        Long TEST_TRAINER_PERSON_ID = 1L;
+        if (principal == null) {
+            return "redirect:/login";
+        }
 
-        TrainerView trainer =
-                trainerService.getTrainerProfileByPersonId(TEST_TRAINER_PERSON_ID);
+
+        String email = principal.getName();
+
+        TrainerView trainer = trainerService.getTrainerProfileByEmail(email);
 
         UpdateTrainerProfileRequest form =
                 new UpdateTrainerProfileRequest(
-                        TEST_TRAINER_PERSON_ID,
+                        trainer.personId(),
                         trainer.location(),
                         trainer.specialization()
                 );
@@ -75,22 +100,46 @@ public class TrainerProfileController {
     }
 
     @PostMapping("/profile/edit")
-    public String saveProfile(@ModelAttribute("form") UpdateTrainerProfileRequest form) {
+    public String saveProfile(
+            Principal principal,
+            @ModelAttribute("form") UpdateTrainerProfileRequest form
+    ) {
+        if (principal == null) {
+            return "redirect:/login";
+        }
 
-        trainerService.updateTrainerProfile(form);
+        String email = principal.getName();
+        TrainerView trainer = trainerService.getTrainerProfileByEmail(email);
+
+        UpdateTrainerProfileRequest safeRequest =
+                new UpdateTrainerProfileRequest(
+                        trainer.personId(),
+                        form.location(),
+                        form.specialization()
+                );
+
+        trainerService.updateTrainerProfile(safeRequest);
         return "redirect:/trainer/profile";
     }
+
+
+
 
     // =========================
     // EDIT WEEKLY SCHEDULE (GET)
     // =========================
     @GetMapping("/profile/edit/schedule")
-    public String editWeeklySchedule(Model model) {
+    public String editWeeklySchedule(Model model, Principal principal) {
 
-        Long TEST_TRAINER_PERSON_ID = 1L;
+        if (principal == null) {
+            return "redirect:/login";
+        }
 
-        TrainerView trainer =
-                trainerService.getTrainerProfileByPersonId(TEST_TRAINER_PERSON_ID);
+
+        String email = principal.getName();
+        TrainerView trainer = trainerService.getTrainerProfileByEmail(email);
+
+        trainerService.getTrainerProfileByPersonId(trainer.personId());
 
         Map<String, WeeklyAvailabilityView> availability = new HashMap<>();
 
@@ -120,9 +169,16 @@ public class TrainerProfileController {
     // =========================
     @PostMapping("/profile/edit/schedule")
     public String saveWeeklySchedule(
-            @RequestParam Long personId,
+            Principal principal,
             @RequestParam Map<String, String> params
     ) {
+        if (principal == null) {
+            return "redirect:/login";
+        }
+
+        String email = principal.getName();
+        TrainerView trainer = trainerService.getTrainerProfileByEmail(email);
+        Long personId = trainer.personId();
 
         Map<Weekday, LocalTime> parsedStartTimes = new EnumMap<>(Weekday.class);
         Map<Weekday, LocalTime> parsedEndTimes   = new EnumMap<>(Weekday.class);
@@ -161,13 +217,20 @@ public class TrainerProfileController {
     }
 
     @GetMapping("/profile/edit/override")
-    public String createOverride(Model model) {
+    public String createOverride(Model model, Principal principal) {
 
-        Long TEST_TRAINER_PERSON_ID = 1L;
+        if (principal == null) {
+            return "redirect:/login";
+        }
+
+
+        String email = principal.getName();
+
+        TrainerView trainer = trainerService.getTrainerProfileByEmail(email);
 
         TrainerOverrideRequest form =
                 new TrainerOverrideRequest(
-                        TEST_TRAINER_PERSON_ID,
+                        trainer.personId(),
                         null,
                         true,
                         null,
@@ -182,11 +245,23 @@ public class TrainerProfileController {
 
     @PostMapping("/profile/edit/override")
     public String saveOverride(
+            Principal principal,
             @ModelAttribute("form") TrainerOverrideRequest form
     ) {
+        if (principal == null) {
+            return "redirect:/login";
+        }
+
+        String email = principal.getName();
+        TrainerView trainer = trainerService.getTrainerProfileByEmail(email);
+
+        // ✅ overwrite οποιοδήποτε personId ήρθε από client
+        form.setPersonId(trainer.personId());
+
         trainerService.createOrUpdateOverride(form);
         return "redirect:/trainer/profile";
     }
+
 
 
 

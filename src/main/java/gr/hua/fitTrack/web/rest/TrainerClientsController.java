@@ -1,11 +1,13 @@
 package gr.hua.fitTrack.web.rest;
 
-import gr.hua.fitTrack.core.model.TrainerProfile;
 import gr.hua.fitTrack.core.service.TrainerClientNotesService;
 import gr.hua.fitTrack.core.service.TrainerService;
+import gr.hua.fitTrack.core.service.model.TrainerView;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
 
 @Controller
 @RequestMapping("/trainer/clients")
@@ -27,15 +29,19 @@ public class TrainerClientsController {
     ----------------------------------------- */
 
     @GetMapping
-    public String viewClients(Model model) {
+    public String viewClients(Model model, Principal principal) {
 
-        Long TEST_TRAINER_PERSON_ID = 1L;
+        if (principal == null) {
+            return "redirect:/login";
+        }
+
+        String email = principal.getName();
+        TrainerView trainer = trainerService.getTrainerProfileByEmail(email);
 
         model.addAttribute(
                 "clientNotes",
-                notesService.getNotesForTrainer(TEST_TRAINER_PERSON_ID)
+                notesService.getNotesForTrainer(trainer.personId())
         );
-
 
         return "trainer/clients";
     }
@@ -47,9 +53,22 @@ public class TrainerClientsController {
     @PostMapping("/notes/{id}")
     public String updateNotes(
             @PathVariable Long id,
-            @RequestParam String notes
+            @RequestParam String notes,
+            Principal principal
     ) {
-        notesService.updateNotes(id, notes);
+
+        if (principal == null) {
+            return "redirect:/login";
+        }
+
+        String email = principal.getName();
+        TrainerView trainer = trainerService.getTrainerProfileByEmail(email);
+
+        notesService.updateNotes(
+                trainer.personId(),
+                notes
+        );
+
         return "redirect:/trainer/clients";
     }
 }

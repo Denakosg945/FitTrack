@@ -19,4 +19,14 @@ public interface AppointmentService {
 
      boolean canClientCreateAppointment(String email);
 
+    void respondToAppointment(
+            Long appointmentId,
+            Long trainerPersonId,
+            boolean accept
+    );
+    void rejectAppointment(Long appointmentId, Long trainerPersonId);
+
+    void approveAppointment(Long appointmentId ,Long trainerPersonId);
+
+
 }

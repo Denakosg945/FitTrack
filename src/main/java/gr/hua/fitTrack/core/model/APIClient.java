@@ -23,8 +23,18 @@ import java.util.Objects;
 public class APIClient {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(
+            strategy = GenerationType.SEQUENCE,
+            generator = "api_client_seq_gen"
+    )
+    @SequenceGenerator(
+            name = "api_client_seq_gen",
+            sequenceName = "api_client_seq",
+            allocationSize = 50
+    )
     private Long id;
+
+
 
     @NotNull
     @NotBlank

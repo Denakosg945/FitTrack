@@ -6,10 +6,11 @@ spring:
     url: jdbc:postgresql://localhost:5432/fittrackdb
     username: postgresTest
     password: postgresTestPassword
+    driver-class-name: org.postgresql.Driver
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     open-in-view: false
     properties:
       hibernate:

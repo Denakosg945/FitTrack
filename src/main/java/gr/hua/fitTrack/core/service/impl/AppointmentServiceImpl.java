@@ -68,7 +68,7 @@ public class AppointmentServiceImpl implements AppointmentService {
                     "You already have the maximum number of active appointments."
             );
         }
-
+        /*
         // - Send EMAIL to CLIENT: "Your appointment request has been submitted"
         smsNotificationPort.sendSms(
                 appointment.getClient().getPerson().getPhoneNumber(),
@@ -78,7 +78,7 @@ public class AppointmentServiceImpl implements AppointmentService {
                 appointment.getTrainer().getPerson().getPhoneNumber(),
                 "New appointment request pending approval");
 
-
+        */
 
         appointmentRepository.save(appointment);
     }

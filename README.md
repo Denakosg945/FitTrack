@@ -1,7 +1,14 @@
 # FitTrack
-FitTrack project for university
+
+A distributed dockerized FitTrack-ing application
+
+## Prerequisites
+
+- **Docker and Docker compose**
+- **Git**
 
 ## Database Initialization & Application Execution
+
 ### 1. Database Initialization (DEV profile)
 
 The database initialization process (creation of dummy data) is executed only when the application is run with the Spring profile dev.
@@ -25,10 +32,11 @@ The database initialization process (creation of dummy data) is executed only wh
 1. Ensure that the database fittrackdb is empty
 
 (either a fresh database or all tables have been removed).
-2. Run the application using the dev Spring profile:
+2. Run the application using the dev Spring profile with docker:
 
-_**mvn -Dspring-boot.run.profiles=dev spring-boot:run**_
-
+```docker
+docker compose -f docker-compose.yml -f docker-compose-dev.yml up --build
+```
 
 #### During startup:
 
@@ -58,5 +66,13 @@ After the database has been initialized, the application should be executed with
 * No dummy data are created
 
 #### Run the application
-mvn spring-boot:run
 
+```docker
+docker compose up --build
+```
+
+## External Services
+
+- **Phone number authentication**
+- **Geolocation Service**
+- **Weather Tracking Service**

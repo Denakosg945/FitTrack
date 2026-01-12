@@ -47,6 +47,8 @@ public class ClientProfileCreationController {
             final Model model, HttpServletResponse response
             ){
 
+        System.out.println("clientProfileCreation");
+
         final CreateClientResult createClientResult = clientService.createClientProfile(createClientRequest);
         if(createClientResult.created()){
             //Delete the cookie - no longer needed

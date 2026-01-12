@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/fittrackdb?currentSchema=public
-    username: fittrack_admin
-    password: adminStrongPassword
+    url: jdbc:postgresql://postgres:5432/fittrackdb?currentSchema=public
+    username: postgresTest
+    password: postgresTestPassword
     driver-class-name: org.postgresql.Driver
 
   jpa:

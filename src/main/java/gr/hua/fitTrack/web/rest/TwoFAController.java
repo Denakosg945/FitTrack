@@ -12,6 +12,8 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -44,20 +46,27 @@ public class TwoFAController {
     }
 
     @PostMapping("/verifyPhone")
-    public String verify2FA(@ModelAttribute Create2FARequest form, Model model) {
+    public String verify2FA(@ModelAttribute Create2FARequest form, Model model,HttpServletResponse response) {
         try{
             CreatePersonResult result = personService.verify2FACode(form.getPhone(),form.getCode());
             System.out.println(result.created());
             if(!result.created()){
+                //Delete the cookie - no longer needed
+                Cookie cookie = new Cookie("mail", null);
+                cookie.setPath("/");
+                cookie.setMaxAge(0);
+                response.addCookie(cookie);
                 personRepository.deleteByPhoneNumber(form.getPhone());
                 throw new PersonException("Could not verify 2FA code");
             }
 
 
             if(result.personView().type().equals(PersonType.CLIENT) ){
+
                 return "redirect:/clientProfileCreation?personId=" + result.personView().id();
             }
 
+            System.out.println("trainer redirection success");
             return "redirect:/trainerProfileCreation?personId=" + result.personView().id();
         }catch(Exception e){
             model.addAttribute("errorMessage", e.getMessage());

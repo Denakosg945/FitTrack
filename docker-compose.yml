@@ -1,0 +1,40 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: fittrackdb
+    environment:
+      POSTGRES_DB: fittrackdb
+      POSTGRES_USER: postgresTest
+      POSTGRES_PASSWORD: postgresTestPassword
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  spring-app:
+    build:
+      context: .
+    container_name: fit_track
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_started
+      hua-noc:
+        condition: service_started
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/fittrackdb
+      SPRING_DATASOURCE_USERNAME: postgresTest
+      SPRING_DATASOURCE_PASSWORD: postgresTestPassword
+
+  hua-noc:
+    build:
+      context: ./huaServices
+    container_name: hua-noc
+    ports:
+      - "8081:8081"
+
+volumes:
+  postgres_data:

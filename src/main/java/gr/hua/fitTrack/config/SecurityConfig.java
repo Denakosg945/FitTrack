@@ -93,7 +93,7 @@ public class SecurityConfig {
                                 "/verifyPhone/**", "/deletePerson/**","/register/**","/login/**",
                                 "/register","/trainers",
                                 "/","/login", "/css/**", "/js/**", "/images/**",
-                                "/v3/api-docs/**","/swagger-ui.html","/swagger-ui/**","/error/**"
+                                "/v3/api-docs/**","/swagger-ui.html","/swagger-ui/**","/error/**","/clientProfileCreation/**","/trainerProfileCreation/**"
                         ).permitAll()
 
                         .requestMatchers("/trainer/**").hasRole("TRAINER")

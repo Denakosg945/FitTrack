@@ -1,0 +1,3 @@
+[submodule "huaServices"]
+	path = huaServices
+	url = https://github.com/Denakosg945/DS-Lab-NOC-Dockerized.git
